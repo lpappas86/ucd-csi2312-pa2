@@ -30,7 +30,6 @@ namespace clustering {
 		}
 
 	}
-	// TODO Test ^^^^ with delete function
 	
 	Cluster & Cluster::operator=(const Cluster &cluster)
 	{
@@ -65,7 +64,6 @@ namespace clustering {
 		return *this;
 	}
 
-	//TODO: delete the points as well
 	Cluster::~Cluster()
 	{
 		if (points == NULL) return;		//empty cluster = nothing to delete
@@ -74,10 +72,9 @@ namespace clustering {
 		LNodePtr next = nullptr;		//the address of the next node
 
 		//delete nodes
-		for (int i = 0; i < size; i++) {
+		for (current; current != NULL; current = next) {
 			next = current->next;
 			delete current;
-			current = next;
 		}
 	}
 
@@ -87,7 +84,7 @@ namespace clustering {
 		if (points != NULL)
 			assert(p->getDims() == points->p->getDims());				//make sure dimensions match
 		
-		if (find(p)) {													//make sure p is not already in cluster
+		if (find(p) != -1) {											//make sure p is not already in cluster
 			return;
 		}
 		size++;
@@ -160,6 +157,26 @@ namespace clustering {
 		return point;
 	}
 
+	const void Cluster::removeAtIndex(int index)
+	{
+		assert(index <= size && index >= 0); 
+		LNodePtr node = points;
+		LNodePtr nextNode = points->next;
+		LNodePtr lastNode = points;
+		if (index == 1)
+			points = node->next;
+		else {
+			for (int i = 0; i < index - 1; i++) {
+				lastNode = node;
+				node = nextNode;
+				nextNode = node->next;
+			}
+			lastNode->next = nextNode;
+			size--;
+		}
+		delete node;
+	}
+
 	void Cluster::clear()
 	{
 		LNodePtr node = points;
@@ -172,17 +189,22 @@ namespace clustering {
 		points = nullptr;
 	}
 
-	//TODO: starting from index.
-	//TODO: return an index
-	const bool Cluster::find(PointPtr point) const
+	//TODO: overload this
+	const int Cluster::find(PointPtr point) const
 	{
+		if (points == NULL)
+			return -1;
 		LNodePtr node = points;
-		for (node; node != NULL; node = node->next)
+		int count = 0;
+		while(true) {
 			if (node->p == point)
-				return true;
-		return false;
+				return count+1;
+			if (node->next == NULL)
+				return -1;
+			count++;
+			node = node->next;
+		}
 	}
-
 
 	std::ostream & operator<<(std::ostream &output, const Cluster &cluster) {
 		LNodePtr ptr = cluster.points;
@@ -231,11 +253,12 @@ namespace clustering {
 	
 		for (int i = 0; i < LHS.size; i++) {
 			shared = false;
-			shared = RHS.find(leftNode->p);
+			if(RHS.find(leftNode->p) != -1)
+				shared = true;
 			if (shared)
 				cluster.remove(leftNode->p);
 			leftNode = leftNode->next;
-		}//end outer for
+		}
 		return cluster;
 	}
 
@@ -277,7 +300,7 @@ namespace clustering {
 		return c;
 	}
 
-	//TODO: more testing
+	//TODO: upgrade
 	const Cluster operator-(const Cluster &cluster, const Point &point)
 	{
 		Cluster newCluster(cluster);
@@ -289,6 +312,7 @@ namespace clustering {
 			if (*node->p == *p) {
 				newCluster.remove(node->p);
 				node = newCluster.points;
+		
 				for (int i = 0; i < count-1; count++)
 					node = node->next;
 				continue;

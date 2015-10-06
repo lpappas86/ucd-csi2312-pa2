@@ -44,14 +44,17 @@ namespace clustering {
 		//mutators
 		void add(const PointPtr &);
 		const PointPtr &remove(const PointPtr &);		//allows for C1.add(C2.remove(point))
+		const void removeAtIndex(int);					//removes node at given index. Indexes start as 1
 		void clear();		//deletes all nodes of a cluster
 
 		//getters
 		int getSize() const { return size; };
 
 		//other member functions
-		const bool find(PointPtr ) const;		//returns true if PointPtr is in the cluster
+		const int find(PointPtr) const;											//returns index of position if found, -1 otherwise. 
+																				//index starts at 1
 
+		friend std::ostream &operator<<(std::ostream &, const Cluster &);
 		friend const Cluster operator+(const Cluster &, const Cluster &);		//Union of two clusters
 		friend const Cluster operator-(const Cluster &, const Cluster &);
 		friend bool operator==(const Cluster &, const Cluster &);
