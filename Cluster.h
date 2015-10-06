@@ -7,8 +7,6 @@
 
 namespace clustering {
 
-	//TODO: add lots of consts
-
 	typedef Point *PointPtr;
 	typedef struct LNode *LNodePtr;
 
@@ -45,7 +43,7 @@ namespace clustering {
 		void add(const PointPtr &);
 		const PointPtr &remove(const PointPtr &);		//allows for C1.add(C2.remove(point))
 		const void removeAtIndex(int);					//removes node at given index. Indexes start as 1
-		void clear();		//deletes all nodes of a cluster
+		void clear();									//deletes all nodes of a cluster
 
 		//getters
 		int getSize() const { return size; };

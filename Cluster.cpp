@@ -190,6 +190,7 @@ namespace clustering {
 	}
 
 	//TODO: overload this
+	//TODO: make work with + point
 	const int Cluster::find(PointPtr point) const
 	{
 		if (points == NULL)

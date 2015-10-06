@@ -92,6 +92,7 @@ int main() {
 	C3 += p2;
 	cout << "C3" << endl << C3 << endl;
 
+	cout << C3.find(ptr2) << endl;
 	C3.removeAtIndex(5);
 	cout << "C3" << endl << C3 << endl;
 
@@ -99,10 +100,10 @@ int main() {
 	/*C3 -= p;
 	cout << C3 << endl;*/
 
-	cout << C3.find(ptr3) << endl;
+	cout << C3.find(ptr2) << endl;
 
 	C3.remove(ptr3);
-	cout << C3.find(ptr3) << endl;
+	cout << C3.find(ptr) << endl;
 
 
     return 0;
