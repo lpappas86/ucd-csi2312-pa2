@@ -47,35 +47,51 @@ int main() {
 	
 	Cluster C1(C);
 	cout << "C1" << endl << C1 << endl << endl;
-	
-	{
-		Cluster C2;
-		C2 = C1;
-		cout << "C2" << endl << C2 << endl << endl;
-	}
-		
-	Cluster C3;
-	cout << "C3" << endl << C3 << endl << endl;
 
-	Cluster C4;
-	C4 = C3;
-	cout << "C4" << endl << C4 << endl << endl;
+	Cluster C2;
+	C2.add(ptr1);
+	//cout << C2 << endl << endl;
+	C2.add(ptr2);
+	//cout << C2 << endl << endl;
+	C2.add(ptr4);
+	//cout << C2 << endl << endl;
+	C2.add(ptr3);
+	C2.add(ptr);
+	cout << "C2" << endl << C2 << endl << endl;
+	cout << "C" << endl << C << endl << endl;
+	if (C2 == C)
+		cout << endl << "T" << endl;
+	else
+		cout << endl << "F" << endl;
+	Cluster C3(C2);
+	C3.remove(ptr);
+	C3.add(ptr);
+	C2.remove(ptr2);
+	C2.add(ptr2);
+	cout << "C2" << endl << C2 << endl << endl;
+	cout << "C" << endl << C << endl << endl;
+	//cout << C2.getSize() << endl << C3.getSize();
+	C2.remove(ptr1);
+	C2.remove(ptr2);
+	C2.remove(ptr);
 
-
-	cout << endl << endl << endl << "Testing remove function: " << endl << endl;
-	cout << "C1" << endl << C1 << endl << endl;
-	C1.remove(ptr2);
-	C1.remove(ptr1);
-	C1.remove(ptr);
-	cout << "C1" << endl << C1 << endl << endl;
-
-	C3.add(ptr2);
-	C3.add(ptr1);
+	C3.remove(ptr3);
+	C3.remove(ptr4);
+	cout << "C2" << endl << C2 << endl << endl;
+	C3.add(ptr4);
 	C3.add(ptr3);
+	C3.add(ptr2);
 	cout << "C3" << endl << C3 << endl << endl;
+	C3 = C3 - p;
+	cout << "C3" << endl << C3 << endl << endl;
+	Point threeD(3);
+	cout << C3 << endl;
+	C3 += p;
+	
+	C3 += p2;
+	cout << C3 << endl;
 
-	cout << "C4 = C3 - C1" << endl << endl;
-	C4 = C3 - C1;
-	cout << "C4" << endl << C4 << endl << endl;
+	C3 -= p;
+	cout << C3 << endl;
     return 0;
 }

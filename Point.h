@@ -44,8 +44,8 @@ namespace clustering {
 		friend bool operator>(const Point &, const Point &);
 		friend bool operator<=(const Point &, const Point &);
 		friend bool operator>=(const Point &, const Point &);
-		friend const Point operator+(const Point &, const Point &);
-		friend const Point operator-(const Point &, const Point &);
+		friend const Point operator+(const Point &, const Point &);			
+		friend const Point operator-(const Point &, const Point &);			
 		friend const Point operator*(const Point &, double);
 		friend const Point operator/(const Point &, double);
 		friend Point &operator+=(Point &, const Point &);

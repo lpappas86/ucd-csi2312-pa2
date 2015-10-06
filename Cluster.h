@@ -7,10 +7,17 @@
 
 namespace clustering {
 
+	//TODO: add lots of consts
+
 	typedef Point *PointPtr;
 	typedef struct LNode *LNodePtr;
 
+	//Make private??????
 	struct LNode {
+
+		//TODO: more constructors
+
+		LNode() : p(nullptr), next(nullptr) {};
 		PointPtr p;
 		LNodePtr next;
 	};
@@ -37,19 +44,25 @@ namespace clustering {
 		//mutators
 		void add(const PointPtr &);
 		const PointPtr &remove(const PointPtr &);		//allows for C1.add(C2.remove(point))
+		void clear();		//deletes all nodes of a cluster
 
 		//getters
 		int getSize() const { return size; };
 
+		//other member functions
+		const bool find(PointPtr ) const;		//returns true if PointPtr is in the cluster
 
-
-		//friends and overloaded operators
-		friend std::ostream &operator<<(std::ostream &, const Cluster &);
 		friend const Cluster operator+(const Cluster &, const Cluster &);		//Union of two clusters
 		friend const Cluster operator-(const Cluster &, const Cluster &);
+		friend bool operator==(const Cluster &, const Cluster &);
+		friend Cluster &operator+=(Cluster &, const Cluster &);
+		friend Cluster &operator-=(Cluster &, const Cluster &);
 
-
-
+		//functions that use Point objects
+		friend const Cluster operator+(const Cluster &, const Point &);			//adds a point object to cluster
+		friend const Cluster operator-(const Cluster &, const Point &);			//removes all points with values equal to point parameter
+		friend Cluster &operator+=(Cluster &, const Point &);
+		friend Cluster &operator-=(Cluster &, const Point &);
 	};	
 }
 #endif
