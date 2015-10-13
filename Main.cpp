@@ -57,27 +57,117 @@ int main() {
 	//cout << C2 << endl << endl;
 	C2.add(ptr3);
 	C2.add(ptr);
+
+	/*cout << "Testing find(PointPtr)" << endl;
 	cout << "C2" << endl << C2 << endl << endl;
-	cout << "C" << endl << C << endl << endl;
+	cout << "ptr1: " << *ptr1 << endl;
+	cout << "C2.find(ptr1)->next-> p:" << endl << *C2.find(ptr1)->next->p << endl;
+	
+	cout << "ptr2: " << *ptr2 << endl;
+	cout << "C2.find(ptr2)->next-> p:" << endl << *C2.find(ptr2)->next->p << endl;
+
+	cout << "ptr3: " << *ptr3 << endl;
+	cout << "C2.find(ptr3)->next-> p:" << endl << *C2.find(ptr3)->next->p << endl;
+	
+
+	cout << "ptr4: " << *ptr4 << endl;
+	cout << "C2.find(ptr4)->next-> p:" << endl << *C2.find(ptr4)->next->p << endl;*/
+
+	////find overloaod
+	//cout << "Testing find(Point)" << endl;
+
+	//cout << "C2" << endl << C2 << endl << endl;
+	//cout << "p1: " << p1 << endl;
+	//cout << "C2.find(p1)->next-> p:" << endl << *C2.find(p1)->next->p << endl;
+
+	//cout << "p2: " << p2 << endl;
+	//cout << "C2.find(p2)->next-> p:" << endl << *C2.find(p2)->next->p << endl;
+
+	//cout << "p3: " << p3 << endl;
+	//cout << "C2.find(p3)->next-> p:" << endl << *C2.find(p3)->next->p << endl;
+
+
+	//cout << "p4: " << p4 << endl;
+	//cout << "C2.find(p4)->next-> p:" << endl << *C2.find(p4)->next->p << endl;
+
+
+	/*cout << "C" << endl << C << endl << endl;
 	if (C2 == C)
 		cout << endl << "T" << endl;
 	else
-		cout << endl << "F" << endl;
-	Cluster C3(C2);
+		cout << endl << "F" << endl;*/
+
+	/*Cluster C3(C2);
 	C3.remove(ptr);
 	C3.add(ptr);
 	C2.remove(ptr2);
 	C2.add(ptr2);
 	cout << "C2" << endl << C2 << endl << endl;
-	cout << "C" << endl << C << endl << endl;
+	cout << "C" << endl << C << endl << endl;*/
 	//cout << C2.getSize() << endl << C3.getSize();
-	C2.remove(ptr1);
-	C2.remove(ptr2);
-	C2.remove(ptr);
 
-	C3.remove(ptr3);
-	C3.remove(ptr4);
+	
+	/*cout << endl << endl << "Testing Remove" << endl;
+	cout << "C" << endl << C << endl << endl;
+
+	cout << "remove ptr1" << endl;
+	C.remove(ptr1);
+	cout << "done" << endl;
+	cout << "C" << endl << C << endl << endl;
+
+	cout << "remove ptr2" << endl;
+	C.remove(ptr2);
+	cout << "done" << endl;
+	cout << "C" << endl << C << endl << endl;
+
+	cout << "remove ptr" << endl;
+	C.remove(ptr);
+	cout << "Done" << endl;
+	cout << "C" << endl << C << endl << endl;
+
+	cout << "remove ptr4" << endl;
+	C.remove(ptr4);
+	cout << "Done" << endl;
+	cout << "C" << endl << C << endl << endl;*/
+
+
+
+	////*****************Remove after
+	//cout << endl << endl << "Testing removeAfter()" << endl;
+	//cout << "C2" << endl << C2 << endl << endl;
+
+	//cout << "C2.removeAfter(C2.find(ptr1))";
+	//C2.removeAfter(C2.find(ptr1));
+	//cout << "C2" << endl << C2 << endl << endl;
+
+	//cout << "C2.removeAfter(C2.find(ptr4))";
+	//C2.removeAfter(C2.find(ptr4));
+	//cout << "C2" << endl << C2 << endl << endl;
+
+	//cout << "C2.removeAfter(C2.find(ptr2))";
+	//C2.removeAfter(C2.find(ptr2));
+	//cout << "C2" << endl << C2 << endl << endl;
+
+	//**********************************Operator-
+	cout << endl << endl << "testing operator-";
 	cout << "C2" << endl << C2 << endl << endl;
+
+	/*C2.removeAfter(C2.find(p2));
+	C2.removeAfter(C2.find(p2));
+	C2.removeAfter(C2.find(p2));*/
+
+	cout << "C2 - p2" << endl;
+	C2 = C2 - p2;
+	cout << "C2" << endl << C2 << endl << endl;
+	C2 = C2 - p2;
+
+
+
+	/*C3.remove(ptr3);
+	C3.remove(ptr4);
+*/
+
+	/*cout << "C2" << endl << C2 << endl << endl;
 	C3.add(ptr4);
 	C3.add(ptr3);
 	C3.add(ptr2);
@@ -94,17 +184,20 @@ int main() {
 
 	cout << C3.find(ptr2) << endl;
 	C3.removeAtIndex(5);
-	cout << "C3" << endl << C3 << endl;
+	cout << "C3" << endl << C3 << endl;*/
 
 
 	/*C3 -= p;
 	cout << C3 << endl;*/
 
-	cout << C3.find(ptr2) << endl;
+	//cout << C3.find(ptr2) << endl;
 
-	C3.remove(ptr3);
-	cout << C3.find(ptr) << endl;
+	//C3.remove(ptr3);
+	//cout << C3.find(ptr1) << endl;
 
+	//cout << "C3" << endl << C3 << endl << endl;
+	//C3 = C3;
+	//cout << "C3" << endl << C3 << endl << endl;
 
-    return 0;
+ //   return 0;
 }

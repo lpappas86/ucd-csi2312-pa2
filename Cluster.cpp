@@ -2,8 +2,6 @@
 
 namespace clustering {
 
-	//TODO: remove dynamic allocation where possible
-
 	Cluster::Cluster(const Cluster &cluster)
 	{
 		size = cluster.size;
@@ -22,10 +20,11 @@ namespace clustering {
 			node = new LNode;
 			if (lastPtr != NULL)
 				lastPtr->next = node;
-			if (cPtr == cluster.points) {			//first run only
+			
+			else if (cPtr == cluster.points) {			//first run only
 				points = node;
 			}
-			node->p = cPtr->p;				//copy point pointer
+			node->p = cPtr->p;						//copy point pointer
 			lastPtr = node;
 		}
 
@@ -51,13 +50,13 @@ namespace clustering {
 		LNodePtr lastPtr = nullptr;
 
 		for (int i = 0; i < cluster.size; i++) {
-			node = new LNode;
+			node = new LNode;				
 			if (lastPtr != NULL)
 				lastPtr->next = node;
-			if (cPtr == cluster.points) {			//first run only
+			else if (cPtr == cluster.points) {			//first run only
 				points = node;
 			}
-			node->p = cPtr->p;				//copy point pointer
+			node->p = cPtr->p;						//copy point pointer
 			cPtr = cPtr->next;
 			lastPtr = node;
 		}
@@ -84,11 +83,11 @@ namespace clustering {
 		if (points != NULL)
 			assert(p->getDims() == points->p->getDims());				//make sure dimensions match
 		
-		if (find(p) != -1) {											//make sure p is not already in cluster
+		if (find(p) != NULL) {											//make sure p is not already in cluster
 			return;
 		}
 		size++;
-		LNodePtr node = new LNode;
+		LNodePtr node = new LNode;										// Dynamically allocate new node
 		LNodePtr ptr = points;
 		node->p = p;
 
@@ -108,7 +107,7 @@ namespace clustering {
 
 		while ( *p > *ptr->p) {											//put in lexographic order
 			last = ptr;
-			if (ptr->next == NULL) {
+			if (ptr->next == NULL) {//if end of list
 				node->next = nullptr;
 				last->next = node;
 				return;
@@ -132,50 +131,46 @@ namespace clustering {
 
 	const PointPtr & Cluster::remove(const PointPtr &point)
 	{
-		bool found = false;												//flags when the point is found
-		LNodePtr node = points;
-		LNodePtr nextNode = points->next;
-		LNodePtr lastNode = points;
-		for (node; node != NULL; node = nextNode) {
-			nextNode = node->next;
-			if (node->p == point) {
-				found = true;
-				if (node == points)										//if point is in first node
-					points = nextNode;
-				else
-					lastNode->next = nextNode;
-				
-				delete node;
-				break;
-			}
-			lastNode = node;
-		}
-		if (found)
+		LNodePtr lastNode = find(point);		//node before one to be deleted
+
+		if (lastNode != NULL) { //if point was found
 			size--;
+			LNodePtr xNode = lastNode->next;		//node to be removed
+
+			if (lastNode->next == points) {
+				points = xNode->next;
+				delete lastNode;					//delete node created by find
+			}
+			else if (xNode->next == NULL)
+				lastNode->next = nullptr;
+			else 
+				lastNode->next = xNode->next;	//remove node from list
+				
+			PointPtr thePoint = xNode->p;
+			delete xNode;
+			return thePoint;	
+		}
 		else
-			std::cout << "The cluster does not contain this point" << std::endl;
-		return point;
+			std::cout << "The point was not found in the cluster" << std::endl;
 	}
 
-	const void Cluster::removeAtIndex(int index)
+	void Cluster::removeAfter(LNodePtr lastNode)
 	{
-		assert(index <= size && index >= 0); 
-		LNodePtr node = points;
-		LNodePtr nextNode = points->next;
-		LNodePtr lastNode = points;
-		if (index == 1)
-			points = node->next;
-		else {
-			for (int i = 0; i < index - 1; i++) {
-				lastNode = node;
-				node = nextNode;
-				nextNode = node->next;
-			}
+		if (lastNode == NULL)
+			return;
+		size--;
+		LNodePtr xNode = lastNode->next;				// node to be removed
+		LNodePtr nextNode = lastNode->next->next;
+		if (lastNode->next == points)
+			points = nextNode;
+		else
 			lastNode->next = nextNode;
-			size--;
-		}
-		delete node;
+		delete xNode;
 	}
+
+	
+
+	
 
 	void Cluster::clear()
 	{
@@ -189,20 +184,43 @@ namespace clustering {
 		points = nullptr;
 	}
 
-	//TODO: overload this
-	//TODO: make work with + point
-	const int Cluster::find(PointPtr point) const
+	const LNodePtr Cluster::find(PointPtr point) const
 	{
 		if (points == NULL)
-			return -1;
+			return NULL;
 		LNodePtr node = points;
+		if (node->p == point) {				// case: point is found in first node
+			LNodePtr newNode = new LNode;	// create new node to point to it
+			newNode->next = node;			
+			return newNode;
+		}
+
 		int count = 0;
 		while(true) {
-			if (node->p == point)
-				return count+1;
-			if (node->next == NULL)
-				return -1;
-			count++;
+			if (node->next == NULL)			// case: point not found
+				return NULL;
+			if (node->next->p == point)		// case: point found
+				return node;
+			node = node->next;
+		}
+	}
+
+	const LNodePtr Cluster::find(Point point) const
+	{
+		if (points == NULL)
+			return NULL;
+		LNodePtr node = points;
+		if (*node->p == point) {				// case: point is found in first node
+			LNodePtr newNode = new LNode;	// create new node to point to it
+			newNode->next = node;
+			return newNode;
+		}
+
+		while (true) {
+			if (node->next == NULL)			// case: point not found
+				return NULL;
+			if (*node->next->p == point)		// case: point found
+				return node;
 			node = node->next;
 		}
 	}
@@ -248,15 +266,11 @@ namespace clustering {
 
 	const Cluster operator-(const Cluster &LHS, const Cluster &RHS)
 	{
-		bool shared;													//is true when the point is in both clusters
 		Cluster cluster(LHS);
 		LNodePtr leftNode = LHS.points;
 	
 		for (int i = 0; i < LHS.size; i++) {
-			shared = false;
-			if(RHS.find(leftNode->p) != -1)
-				shared = true;
-			if (shared)
+			if(RHS.find(leftNode->p) != NULL)
 				cluster.remove(leftNode->p);
 			leftNode = leftNode->next;
 		}
@@ -290,7 +304,6 @@ namespace clustering {
 		return LHS;
 	}
 
-	//use pointers?????
 	const Cluster operator+(const Cluster &cluster, const Point &point)
 	{
 		//dynamically allocate point object
@@ -301,26 +314,19 @@ namespace clustering {
 		return c;
 	}
 
-	//TODO: upgrade
 	const Cluster operator-(const Cluster &cluster, const Point &point)
 	{
 		Cluster newCluster(cluster);
-		PointPtr p = new Point(point);
-		LNodePtr node = new LNode;
-		node = newCluster.points;
-		int count = 0;
-		for (node; node != NULL; node = node->next) {
-			if (*node->p == *p) {
-				newCluster.remove(node->p);
-				node = newCluster.points;
-		
-				for (int i = 0; i < count-1; count++)
-					node = node->next;
-				continue;
-			}
-			count++;
-		}
-		
+		LNodePtr node = cluster.find(point);
+
+		if (node == NULL)
+			std::cout << "Can't Remove: The point was not found" << std::endl;
+
+		while (node != NULL){
+			node = newCluster.find(point);
+			newCluster.removeAfter(node);		
+		} 
+
 		return newCluster;
 	}
 

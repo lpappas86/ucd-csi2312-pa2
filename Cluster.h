@@ -10,11 +10,7 @@ namespace clustering {
 	typedef Point *PointPtr;
 	typedef struct LNode *LNodePtr;
 
-	//Make private??????
 	struct LNode {
-
-		//TODO: more constructors
-
 		LNode() : p(nullptr), next(nullptr) {};
 		PointPtr p;
 		LNodePtr next;
@@ -27,8 +23,14 @@ namespace clustering {
 		LNodePtr points;
 
 	public:
-		//constructor with default values
+		/***************constructor with default values********************/
 		Cluster() : size(0), points(nullptr) {};
+
+
+
+		/*******************************************************************
+		      ****************        Big 3        ********************
+		*******************************************************************/
 
 		//copy constructor
 		Cluster(const Cluster &);
@@ -39,18 +41,45 @@ namespace clustering {
 		//destructor
 		~Cluster();
 
-		//mutators
+
+
+		/*******************************************************************
+		    *****************        Mutators        *******************
+		*******************************************************************/
+
 		void add(const PointPtr &);
 		const PointPtr &remove(const PointPtr &);		//allows for C1.add(C2.remove(point))
-		const void removeAtIndex(int);					//removes node at given index. Indexes start as 1
+
+		void removeAfter(LNodePtr lastNode);				//removes node at given index. Indexes start as 1
 		void clear();									//deletes all nodes of a cluster
 
 		//getters
 		int getSize() const { return size; };
 
-		//other member functions
-		const int find(PointPtr) const;											//returns index of position if found, -1 otherwise. 
-																				//index starts at 1
+
+
+		/*******************************************************************
+			******************    Search functions    ******************
+		 *******************************************************************/
+
+		// Finds a pointPtr in a linked list
+		// returns pointer to node before position where point is found
+		// to access correct node use "find(pointPtr)->next"
+		// returns NULL if point not found
+		// Dynamically creates LNode if point is found in first node
+		const LNodePtr find(PointPtr) const;	
+
+		// Finds the first instance of a point in a linked list
+		//returns pointer to node before position where point is found
+		//to access correct node use "find(point)->next"
+		//returns NULL if point not found
+		//Dynamically creates LNode if point is found in first node
+		const LNodePtr find(Point) const;
+
+
+		/*******************************************************************
+		    *****************    Operator Overloads    ******************
+		*******************************************************************/
 
 		friend std::ostream &operator<<(std::ostream &, const Cluster &);
 		friend const Cluster operator+(const Cluster &, const Cluster &);		//Union of two clusters
@@ -59,7 +88,7 @@ namespace clustering {
 		friend Cluster &operator+=(Cluster &, const Cluster &);
 		friend Cluster &operator-=(Cluster &, const Cluster &);
 
-		//functions that use Point objects
+			/*******functions that use Point objects************/
 		friend const Cluster operator+(const Cluster &, const Point &);			//adds a point object to cluster
 		friend const Cluster operator-(const Cluster &, const Point &);			//removes all points with values equal to point parameter
 		friend Cluster &operator+=(Cluster &, const Point &);
