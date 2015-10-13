@@ -3,6 +3,9 @@
 #include <iostream>
 #include <cassert>
 #include <cmath>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 namespace clustering {
 
@@ -38,6 +41,7 @@ namespace clustering {
 
 		//friends
 		friend std::ostream &operator<<(std::ostream &, const Point &);
+		friend std::istream &operator>>(std::istream &, Point &);
 		friend bool operator==(const Point &, const Point &);
 		friend bool operator!=(const Point &, const Point &);
 		friend bool operator<(const Point &, const Point &);

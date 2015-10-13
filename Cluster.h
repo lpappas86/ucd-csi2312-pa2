@@ -23,7 +23,9 @@ namespace clustering {
 		LNodePtr points;
 
 	public:
-		/***************constructor with default values********************/
+		/***************        constructors            ********************/
+
+		// defaults to size 0 and null points
 		Cluster() : size(0), points(nullptr) {};
 
 
@@ -48,12 +50,22 @@ namespace clustering {
 		*******************************************************************/
 
 		void add(const PointPtr &);
-		const PointPtr &remove(const PointPtr &);		//allows for C1.add(C2.remove(point))
 
-		void removeAfter(LNodePtr lastNode);				//removes node at given index. Indexes start as 1
-		void clear();									//deletes all nodes of a cluster
+		// findes and removes node pointed to by PointPtr
+		// allows for C1.add(C2.remove(point))
+		const PointPtr &remove(const PointPtr &);		
 
-		//getters
+		// removes node at lastNode->next
+		void removeAfter(LNodePtr lastNode);			
+
+		//deletes all nodes of a cluster
+		void clear();		
+
+
+
+		/**********************     	Getters		*************************/
+
+		//returns size
 		int getSize() const { return size; };
 
 

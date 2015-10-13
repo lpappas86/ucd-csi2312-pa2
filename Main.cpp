@@ -156,10 +156,10 @@ int main() {
 	C2.removeAfter(C2.find(p2));
 	C2.removeAfter(C2.find(p2));*/
 
-	cout << "C2 - p2" << endl;
+	/*cout << "C2 - p2" << endl;
 	C2 = C2 - p2;
 	cout << "C2" << endl << C2 << endl << endl;
-	C2 = C2 - p2;
+	C2 = C2 - p2;*/
 
 
 
@@ -199,5 +199,22 @@ int main() {
 	//C3 = C3;
 	//cout << "C3" << endl << C3 << endl << endl;
 
- //   return 0;
+
+	//**********************Point----> operator>>
+	/*cout << "Testing point operator>>" << endl;
+	point << */
+
+	ifstream inFile;
+	inFile.open("input.txt");
+	if (inFile.is_open())
+		cout << "bueno" << endl;
+	else
+		cout << "no bueno" << endl;
+	Point test(5);
+	inFile >> test;
+	cout << test;
+	Point test2(5);
+	inFile >> test2;
+	cout << test2;
+    return 0;
 }

@@ -18,7 +18,7 @@ namespace clustering {
 			values[i] = pvalues[i];
 
 	}
-
+	
 	//copy constructor
 	Point::Point(const Point &p) {
 		dim = p.getDims();
@@ -65,6 +65,26 @@ namespace clustering {
 		output << ")" << std::endl;
 
 		return output;
+	}
+
+	std::istream & operator>>(std::istream &in, Point &point)
+	{
+			
+		std::string lineString;			// holds line from input file
+		getline(in, lineString);
+
+		//convert to stringStream
+		std::stringstream line(lineString);		
+
+
+		//put values in points
+		std::string dString;
+		for (int i = 0; i < point.getDims(); i++){
+			getline(line, dString, ',');
+			point.setDim(i, std::stod(dString));
+		}
+		
+		return in;
 	}
 
 

@@ -195,7 +195,6 @@ namespace clustering {
 			return newNode;
 		}
 
-		int count = 0;
 		while(true) {
 			if (node->next == NULL)			// case: point not found
 				return NULL;
