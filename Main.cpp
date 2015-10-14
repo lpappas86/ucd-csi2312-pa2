@@ -206,15 +206,37 @@ int main() {
 
 	ifstream inFile;
 	inFile.open("input.txt");
+	
 	if (inFile.is_open())
 		cout << "bueno" << endl;
 	else
 		cout << "no bueno" << endl;
-	Point test(5);
-	inFile >> test;
-	cout << test;
-	Point test2(5);
-	inFile >> test2;
-	cout << test2;
+	
+	//cout << "infile dimension: " << Point::getInFileDim(inFile) << endl;
+	//PointPtr test = new Point(Point::getInFileDim(inFile));
+	//inFile >> *test;
+	//cout << "test size: " << test->getDims() << endl << *test;
+
+	//cout << "infile dimension: " << Point::getInFileDim(inFile) << endl;
+
+
+	//Point test2(Point::getInFileDim(inFile));
+	//inFile >> test2;
+	//cout << "test2 size: " << test2.getDims() << endl << test2;
+
+
+	Cluster cluster;
+	inFile >> cluster;
+	cout << cluster;
+	inFile.clear();
+	cout << Cluster::numLines(inFile) << endl;
+
+	cluster.setCentroid();
+	cout << "Centroid = " << cluster.getCentroid() << endl;
+	cout << "comp centroid" << endl;
+	cluster.compCentroid();
+	cout << "Centroid = " << cluster.getCentroid() << endl;
+
+	
     return 0;
 }

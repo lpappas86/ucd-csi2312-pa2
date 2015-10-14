@@ -184,6 +184,23 @@ namespace clustering {
 		points = nullptr;
 	}
 
+	void Cluster::setCentroid(const Point &point)
+	{
+		__centroid = point;
+	}
+
+	void Cluster::compCentroid()
+	{
+		LNodePtr node = points;
+		Point accumulator(points->p->getDims());
+
+		// average cluster points
+		for (node; node != NULL; node = node->next) {
+			accumulator += *node->p / size;
+		}
+
+	}
+
 	const LNodePtr Cluster::find(PointPtr point) const
 	{
 		if (points == NULL)
@@ -237,6 +254,30 @@ namespace clustering {
 			}
 		}
 		return output;
+	}
+
+	std::istream & operator>>(std::istream &in, Cluster &cluster)
+	{
+		// get number of points coming in
+		int numPoints = Cluster::numLines(in);
+		PointPtr point = nullptr;			//points to a point
+		std::string lineString;				// holds line from input file
+
+		//convert to stringStream
+
+		for (int i = 0; i < numPoints; i++) {
+			getline(in, lineString);
+			std::stringstream line(lineString);
+			point = new Point(Point::getInFileDim(line));
+			line >> *point;
+			cluster.add(point);
+			//ptrArray[i] = point; 
+		}
+		return in;
+		
+
+		//delete ptrArray;
+		return in;
 	}
 
 	const Cluster operator+(const Cluster &LHS, const Cluster &RHS)

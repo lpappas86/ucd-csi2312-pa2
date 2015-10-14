@@ -18,28 +18,83 @@ namespace clustering {
 		double *values;
 
 	public:
-		// Constructors
-		Point(int dim);                   //initializes point with dimension dim and all values = 0
-		Point(int d, double[]);             //initialiuzes point with dim d and values array
-		Point(const Point &);                    //copy constructor
+		
+		/*******************************************************************
+		     ****************     Constructors      *********************
+		*******************************************************************/
+		Point() : dim(0) {};
+
+		//initializes point with dimension dim and all values = 0
+		Point(int dim);			
+
+		//initialiuzes point with dim d and values array
+		Point(int d, double[]);      
+
+		//copy constructor
+		Point(const Point &);               
+		
 		// Destructor
 		~Point();
 
-		// Mutator methods
+
+
+		/*******************************************************************
+		    ****************        Mutators       ********************
+		*******************************************************************/
+
 		void setDim(int index, double val);  //sets point value at dimension of index to val
 
 
-		// Accessor methods
-		int getDims() const { return dim; };       //returns dimension
-		double getvalues(int index) const;                  //returns value at dimenstion of index
 
-		//other methods
+		/*******************************************************************
+		      ****************      Accessors      ********************
+		*******************************************************************/
+
+		//returns dimension
+		int getDims() const { return dim; };				
+		
+		//returns value at dimenstion of index
+		double getvalues(int index) const;                  
+		
+																	
+
+		/*******************************************************************
+		      ****************     Other Methods     *****************
+		*******************************************************************/
+
+		// returns the distance from one point to another
 		double distanceTo(Point &p);
 
-		//overloaded operators
-		Point &operator=(const Point &);
+		// returns dimension of next line in ifstream object
+		static int getInFileDim(std::istream &in) {
+			std::string lineString;			// holds line from input file
 
-		//friends
+											// get position in file to restore after count is taken
+			int pos = in.tellg();
+
+			// save line to string
+			getline(in, lineString);
+
+			//convert to stringStream
+			std::stringstream line(lineString);
+
+			//count dimensions
+			int count = 0;			//holds dimensions
+			while (line.good()) {
+				getline(line, lineString, ',');
+				count++;
+			}
+			in.seekg(pos);
+
+			return count;
+		}
+
+
+		/*******************************************************************
+		     ****************  Overloaded operators   ****************
+		*******************************************************************/
+
+		Point &operator=(const Point &);
 		friend std::ostream &operator<<(std::ostream &, const Point &);
 		friend std::istream &operator>>(std::istream &, Point &);
 		friend bool operator==(const Point &, const Point &);

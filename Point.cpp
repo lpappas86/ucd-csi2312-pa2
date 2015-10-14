@@ -1,8 +1,10 @@
 #include "Point.h"
-
+//ASK: operator>> wtf?
 namespace clustering {
 
 	// Constructors
+
+
 	Point::Point(int d) {
 		dim = d;
 		assert(dim > 0);
@@ -19,7 +21,6 @@ namespace clustering {
 
 	}
 	
-	//copy constructor
 	Point::Point(const Point &p) {
 		dim = p.getDims();
 		values = new double[dim];
@@ -27,26 +28,21 @@ namespace clustering {
 			values[j] = p.values[j];
 	}
 
-	// Destructor
-	// delete dynamic array
+
 	Point::~Point() {
 		delete[] values;
 	}
 
-	// Mutator methods
-	// Change the values of dimension index to val
 	void Point::setDim(int index, double val) {
 		assert(index >= 0 && index < dim);
 		values[index] = val;
 	}
-	// Accessors
-	// Return the current values of private member variables
+
 	double Point::getvalues(int index) const {
 		return values[index];
 	}
 
 
-	//computes the distance between this point and point p
 	double Point::distanceTo(Point& p) {
 		assert(dim == p.dim);
 		double sum = 0;
@@ -56,7 +52,7 @@ namespace clustering {
 		return sqrt(sum);
 	}
 
-
+	// TODO: update this
 	std::ostream &operator<<(std::ostream &output, const Point &point) {
 		output << "(" << point.values[0];
 		for (int i = 1; i < point.dim; i++) {
@@ -69,19 +65,21 @@ namespace clustering {
 
 	std::istream & operator>>(std::istream &in, Point &point)
 	{
-			
-		std::string lineString;			// holds line from input file
-		getline(in, lineString);
+		
+		//assert(Point::getInFileDim(in) == point.getDims());
+		//std::string lineString;			// holds line from input file
+		//getline(in, lineString);
 
 		//convert to stringStream
-		std::stringstream line(lineString);		
-
+		//std::stringstream line(lineString);		
 
 		//put values in points
 		std::string dString;
-		for (int i = 0; i < point.getDims(); i++){
-			getline(line, dString, ',');
-			point.setDim(i, std::stod(dString));
+		int count = 0;
+		while(in.good()){
+			getline(in, dString, ',');
+			point.setDim(count, std::stod(dString));
+			count++;
 		}
 		
 		return in;

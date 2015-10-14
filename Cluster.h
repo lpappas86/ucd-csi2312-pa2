@@ -5,6 +5,12 @@
 #include<iostream>
 #include<cassert>
 
+// CLASS: use shared pointers
+// TODO: everywhere a PointPtr is an argument it should be const
+// TODO: inner move class that forces you to never do an add without a remove
+// TODO: inner centroid class??
+// TODO: destructer deletes points?
+// TODO: make inner class friend of outer to access private members
 namespace clustering {
 
 	typedef Point *PointPtr;
@@ -19,10 +25,13 @@ namespace clustering {
 	class Cluster {
 
 	private:
+
 		int size;
 		LNodePtr points;
+		Point __centroid;
 
 	public:
+
 		/***************        constructors            ********************/
 
 		// defaults to size 0 and null points
@@ -59,14 +68,51 @@ namespace clustering {
 		void removeAfter(LNodePtr lastNode);			
 
 		//deletes all nodes of a cluster
-		void clear();		
+		void clear();	
+
+		//initialize centroid
+		void setCentroid(const Point&);
+
+		// compute centroid
+		void compCentroid();
 
 
-
-		/**********************     	Getters		*************************/
-
-		//returns size
+		/*******************************************************************
+		    *****************        Getters       *********************
+		*******************************************************************/
+		// returns size
 		int getSize() const { return size; };
+
+		// retuns centroid
+		const Point getCentroid() { return __centroid; }
+
+		// returns the number of lines in an input file
+		static int numLines(std::istream &in) {
+			
+			//save position of file pointer 
+			int pos = in.tellg();
+			
+			// account for possible eof bit
+			in.clear();			
+
+			// move file pointer to beginning of file
+			in.seekg(0);				
+
+			std::string aString;			//holds unused information
+			int lines = 0;					//counts lines
+
+			//count
+			while (getline(in, aString))
+				lines++;
+
+			// clear eof bit
+			in.clear();		
+
+			// recover previous position in file
+			in.seekg(pos);
+
+			return lines;
+		}
 
 
 
@@ -93,17 +139,31 @@ namespace clustering {
 		    *****************    Operator Overloads    ******************
 		*******************************************************************/
 
+		// in/out
 		friend std::ostream &operator<<(std::ostream &, const Cluster &);
-		friend const Cluster operator+(const Cluster &, const Cluster &);		//Union of two clusters
-		friend const Cluster operator-(const Cluster &, const Cluster &);
-		friend bool operator==(const Cluster &, const Cluster &);
+		friend std::istream &operator>>(std::istream &, Cluster &);
+
+		// Union of two clusters
+		friend const Cluster operator+(const Cluster &, const Cluster &);	
 		friend Cluster &operator+=(Cluster &, const Cluster &);
+
+		// difference of two clusters
+		friend const Cluster operator-(const Cluster &, const Cluster &);
 		friend Cluster &operator-=(Cluster &, const Cluster &);
 
+		// compare two clusters
+		friend bool operator==(const Cluster &, const Cluster &);
+		
+		
+
 			/*******functions that use Point objects************/
-		friend const Cluster operator+(const Cluster &, const Point &);			//adds a point object to cluster
-		friend const Cluster operator-(const Cluster &, const Point &);			//removes all points with values equal to point parameter
+
+		//add a point object to cluster
+		friend const Cluster operator+(const Cluster &, const Point &);		
 		friend Cluster &operator+=(Cluster &, const Point &);
+
+		//remove all points with values equal to point parameter
+		friend const Cluster operator-(const Cluster &, const Point &);			
 		friend Cluster &operator-=(Cluster &, const Point &);
 	};	
 }
