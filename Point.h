@@ -9,12 +9,10 @@
 
 namespace clustering {
 
-
-
 	class Point {
 
 	private:
-		int dim;
+		unsigned dim;
 		double *values;
 
 	public:
@@ -22,13 +20,15 @@ namespace clustering {
 		/*******************************************************************
 		     ****************     Constructors      *********************
 		*******************************************************************/
+		
+		// Creates a 0 dimensional point to be initialized later
 		Point() : dim(0) {};
 
 		//initializes point with dimension dim and all values = 0
-		Point(int dim);			
+		Point(unsigned dim);			
 
 		//initialiuzes point with dim d and values array
-		Point(int d, double[]);      
+		Point(unsigned d, double[]);      
 
 		//copy constructor
 		Point(const Point &);               
@@ -42,7 +42,8 @@ namespace clustering {
 		    ****************        Mutators       ********************
 		*******************************************************************/
 
-		void setDim(int index, double val);  //sets point value at dimension of index to val
+		//sets point value at dimension of index to val
+		void setDim(int index, double val);  
 
 
 

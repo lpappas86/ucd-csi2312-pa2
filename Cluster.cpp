@@ -5,13 +5,15 @@ namespace clustering {
 	Cluster::Cluster(const Cluster &cluster)
 	{
 		size = cluster.size;
-				
+		setCentroid(cluster.__centroid);
+		__id = idGenerator();
+
 		//case cluster is empty
 		if (cluster.points == NULL) {
 			points = NULL;
 			return;
 		}
-		
+
 		LNodePtr node;
 		LNodePtr cPtr = cluster.points;
 		LNodePtr lastPtr = nullptr;
@@ -27,7 +29,7 @@ namespace clustering {
 			node->p = cPtr->p;						//copy point pointer
 			lastPtr = node;
 		}
-
+		
 	}
 	
 	Cluster & Cluster::operator=(const Cluster &cluster)
@@ -38,6 +40,7 @@ namespace clustering {
 		clear();		//free up memory
 		
 		size = cluster.size;
+		setCentroid(cluster.__centroid);
 
 		//case: cluster is empty
 		if (cluster.points == NULL) {
@@ -86,26 +89,34 @@ namespace clustering {
 		if (find(p) != NULL) {											//make sure p is not already in cluster
 			return;
 		}
+
+		//increment size
 		size++;
-		LNodePtr node = new LNode;										// Dynamically allocate new node
+
+		//invalidate centroid
+		setValidity(false);
+
+		//create node
+		LNodePtr node = new LNode;		
 		LNodePtr ptr = points;
 		node->p = p;
 
-		if (points == NULL) {											//case: empty cluster
+		//insert node
+		if (points == NULL) {			//case: empty cluster
 			points = node;
 			node->next = nullptr;
 			return;
 		}
 
-		if (*node->p < *points->p) {									//case: new point is smallest point
+		if (*node->p < *points->p) {	//case: new point is smallest point
 			node->next = points;
 			points = node;
 			return;
 		}
 
+		//put in lexographic order
 		LNodePtr last = nullptr;
-
-		while ( *p > *ptr->p) {											//put in lexographic order
+		while ( *p > *ptr->p) {							
 			last = ptr;
 			if (ptr->next == NULL) {//if end of list
 				node->next = nullptr;
@@ -115,8 +126,8 @@ namespace clustering {
 			ptr = ptr->next;		
 		}
 
-		while (*p == *ptr->p && p > ptr->p) {							//if points are equal sort by memory address 
-			last = ptr;													//for reasons of comparison
+		while (*p == *ptr->p && p > ptr->p) {			//if points are equal sort by memory address 
+			last = ptr;									//for reasons of comparison
 			if (ptr->next == NULL) {
 				node->next = nullptr;
 				last->next = node;
@@ -132,6 +143,9 @@ namespace clustering {
 	const PointPtr & Cluster::remove(const PointPtr &point)
 	{
 		LNodePtr lastNode = find(point);		//node before one to be deleted
+
+		//Invalidate Centroid
+		setValidity(false);
 
 		if (lastNode != NULL) { //if point was found
 			size--;
@@ -158,7 +172,13 @@ namespace clustering {
 	{
 		if (lastNode == NULL)
 			return;
+
+		//decrement size
 		size--;
+
+		//invalidate Centroid
+		setValidity(false);
+
 		LNodePtr xNode = lastNode->next;				// node to be removed
 		LNodePtr nextNode = lastNode->next->next;
 		if (lastNode->next == points)
@@ -176,29 +196,99 @@ namespace clustering {
 	{
 		LNodePtr node = points;
 		LNodePtr nextNode = nullptr;
+
+		//delete nodes
 		for (node; node != NULL; node = nextNode) {
 			nextNode = node->next;
 			delete node;
 		}
 		size = 0;
 		points = nullptr;
-	}
-
-	void Cluster::setCentroid(const Point &point)
-	{
-		__centroid = point;
+		setValidity(false);
 	}
 
 	void Cluster::compCentroid()
 	{
 		LNodePtr node = points;
-		Point accumulator(points->p->getDims());
-
-		// average cluster points
+		int dim = points->p->getDims();
+		Point accumulator(dim);
 		for (node; node != NULL; node = node->next) {
-			accumulator += *node->p / size;
+			accumulator += (*node->p / size);
 		}
+		__centroid = accumulator;
+		setValidity(true);
+	}
 
+	int Cluster::idGenerator()
+	{
+		static int id = 0;
+		id++;
+		return id;
+	}
+
+	double Cluster::intraClusterDistance() const
+	{
+		double sum = 0;						// holds sum of distances
+		LNodePtr node1 = points;			// iterates through nodes
+
+		for (int i = 0; i < this->getSize() - 1; i++) {									
+			for (LNodePtr node2 = node1->next; node2 != NULL; node2 = node2->next) {
+				sum += node1->p->distanceTo(*node2->p);										
+			}
+			node1 = node1->next;
+		}
+		return sum;
+	}
+
+	int Cluster::getClusterEdges()
+	{
+		return getSize() * (getSize() - 1) / 2;
+	}
+
+	int Cluster::numLines(std::istream & in)
+	{
+
+		//save position of file pointer 
+		int pos = in.tellg();
+
+		// account for possible eof bit
+		in.clear();
+
+		// move file pointer to beginning of file
+		in.seekg(0);
+
+		std::string aString;			//holds unused information
+		int lines = 0;					//counts lines
+
+										//count
+		while (getline(in, aString))
+			lines++;
+
+		// clear eof bit
+		in.clear();
+
+		// recover previous position in file
+		in.seekg(pos);
+
+		return lines;
+	}
+
+	void Cluster::pickPoints(int k, PointPtr *pointArray)
+	{
+		assert(k >= 0 && k <= size);
+		LNodePtr node = points;
+		int interval = size / (k-1);
+		for (int j = 0; j < k; j ++) {
+			pointArray[j] = node->p;
+			for (int i = 0; i < interval; i++) {
+				node = node->next;
+				if (node->next == NULL) break;
+			}
+			if (node->next == NULL) break;
+		}	
+		while (node->next != NULL)
+			node = node->next;
+		pointArray[k - 1] = node->p;
 	}
 
 	const LNodePtr Cluster::find(PointPtr point) const
@@ -241,6 +331,32 @@ namespace clustering {
 		}
 	}
 
+	Point &Cluster::operator[](int index)
+	{
+		assert(index >= 0 && index < size);
+		LNodePtr ptr = points;
+		for (int i = 0; i < index; i++)
+			ptr = ptr->next;
+		return *ptr->p;
+	}
+
+	double interClusterDistance(const Cluster &c1, const Cluster &c2)
+	{
+		double sum = 0;						// holds sum of distances
+
+		for (LNodePtr node1 = c1.points; node1 != NULL; node1 = node1->next) {
+			for (LNodePtr node2 = c2.points; node2 != NULL; node2 = node2->next) {
+				sum += node1->p->distanceTo(*node2->p);
+			}
+		}
+		return sum;
+	}
+
+	double interClusterEdges(const Cluster & c1, const Cluster & c2)
+	{
+		return c1.getSize() * c2.getSize();
+	}
+
 	std::ostream & operator<<(std::ostream &output, const Cluster &cluster) {
 		LNodePtr ptr = cluster.points;
 		output << "Size: " << cluster.getSize() << std::endl;
@@ -264,7 +380,6 @@ namespace clustering {
 		std::string lineString;				// holds line from input file
 
 		//convert to stringStream
-
 		for (int i = 0; i < numPoints; i++) {
 			getline(in, lineString);
 			std::stringstream line(lineString);
@@ -273,6 +388,7 @@ namespace clustering {
 			cluster.add(point);
 			//ptrArray[i] = point; 
 		}
+		cluster.compCentroid();
 		return in;
 		
 
@@ -301,6 +417,9 @@ namespace clustering {
 		node = shared.points;
 		for (node; node != NULL; node = node->next)		
 			cluster.add(node->p);
+
+		//invalidate centroid
+		cluster.setValidity(false);
 		return cluster;
 	}
 
@@ -314,6 +433,10 @@ namespace clustering {
 				cluster.remove(leftNode->p);
 			leftNode = leftNode->next;
 		}
+
+		//invalidate centroid
+		cluster.setValidity(false);
+
 		return cluster;
 	}
 
@@ -344,14 +467,29 @@ namespace clustering {
 		return LHS;
 	}
 
+
 	const Cluster operator+(const Cluster &cluster, const Point &point)
 	{
-		//dynamically allocate point object
+		// dynamically allocate point object
 		PointPtr p = new Point(point);
-		
+
+		// make copy of cluster 
 		Cluster c(cluster);
+
+		
+		//add point
 		c.add(p);
+
+		//invalidate centroid
+		c.setValidity(false);
+
 		return c;
+	}
+
+	Cluster & operator+=(Cluster &cluster, const Point &point)
+	{
+		cluster = cluster + point;
+		return cluster;
 	}
 
 	const Cluster operator-(const Cluster &cluster, const Point &point)
@@ -367,14 +505,12 @@ namespace clustering {
 			newCluster.removeAfter(node);		
 		} 
 
+		//invalidate newCluster's centroid
+		newCluster.setValidity(false);
+
 		return newCluster;
 	}
 
-	Cluster & operator+=(Cluster &cluster, const Point &point)
-	{
-		cluster = cluster + point;
-		return cluster;
-	}
 
 	Cluster & operator-=(Cluster &cluster, const Point &point)
 	{
@@ -382,6 +518,10 @@ namespace clustering {
 		return cluster;
 	}
 
+	void Cluster::Move::perform()
+	{
+		PointPtr p = _from->remove(point);
+		_to->add(p);
+	}
 
-	
 }

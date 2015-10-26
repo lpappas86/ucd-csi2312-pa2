@@ -5,18 +5,18 @@ namespace clustering {
 	// Constructors
 
 
-	Point::Point(int d) {
+	Point::Point(unsigned d) {
 		dim = d;
 		assert(dim > 0);
 		values = new double[dim];
-		for (int i = 0; i < dim; i++)
+		for (unsigned i = 0; i < dim; i++)
 			values[i] = 0;
 	}
 
-	Point::Point(int d, double pvalues[]) {
+	Point::Point(unsigned d, double pvalues[]) {
 		dim = d;
 		values = new double[dim];
-		for (int i = 0; i < dim; i++)
+		for (unsigned i = 0; i < dim; i++)
 			values[i] = pvalues[i];
 
 	}

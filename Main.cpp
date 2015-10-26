@@ -227,16 +227,81 @@ int main() {
 
 	Cluster cluster;
 	inFile >> cluster;
-	cout << cluster;
-	inFile.clear();
-	cout << Cluster::numLines(inFile) << endl;
-
-	cluster.setCentroid();
-	cout << "Centroid = " << cluster.getCentroid() << endl;
-	cout << "comp centroid" << endl;
+	cout << "Cluster" << endl << cluster;
+	//inFile.clear();
+	//cout << Cluster::numLines(inFile) << endl;
+	//cluster.setCentroid(ptr);
+	//cout << cluster.getCentroid() << endl;
 	cluster.compCentroid();
-	cout << "Centroid = " << cluster.getCentroid() << endl;
+	//cout << cluster.getCentroid() << endl;
 
+	//Cluster::Centroid.setCentroid;
+	cout << endl << endl;
+	cout << cluster[0] << endl;
+	cout << cluster[1] << endl;
+	cout << cluster[2] << endl;
+	//cout << *cluster[3];
+
+
+	//cout << "Testing Move" << endl;
+	//Cluster cluster1;
+	//cout << "Cluster1 new" << endl << cluster1 << endl;
+	///*PointPtr movedP = cluster.remove(cluster[0]);
+	//cluster1.add(movedP);*/
+	////cluster1.add(cluster.remove(cluster[1]));
+	//Cluster::Move(cluster[2], &cluster, &cluster1).perform();
+	//Cluster::Move(cluster[1], &cluster, &cluster1).perform();
+	//Cluster::Move(cluster[0], &cluster, &cluster1).perform();
+
+	//cout << "Cluster" << endl << cluster;
+	//cout << "Cluster1" << endl << cluster1;
+	//cout << endl << "end move test" << endl;
+
+	//cout << "Testing PickPoints" << endl << endl;
+	//	int k = 6;
+	//	PointPtr *pArray = new PointPtr[k];
+	//	cout << "Cluster" << endl << cluster;
+	//	cout << endl << endl;
+	//	cluster.pickPoints(k, pArray);
+	//	for (int i = 0; i < k; i++) {
+	//		cout << *pArray[i] << endl;
+	//	}
+	//cout << "end PickPoints test" << endl << endl;
+
+	// INTRTACLUSTERDISTANCE TEST
+	cout << "Testing intraClusterDistance" << endl << endl;
+	cout << "Cluster" << endl << cluster;
+	cout << cluster.intraClusterDistance() << endl;
+	cout << cluster[0].distanceTo(cluster[1]) << endl;
+	cout << cluster[0].distanceTo(cluster[2]) << endl;
+	cout << cluster[1].distanceTo(cluster[2]) << endl;
+	//cout << cluster[1].distanceTo(cluster[2]) << endl;
+	cout << "end intraclusterdistance test" << endl << endl;
+
+
+	// INTERCLUSTERDISTANCE TEST
+	cout << "testing interclusterDistance" << endl << endl;
+	cout << "Cluster" << endl << cluster;
+	Cluster cluster1;
+	cout << cluster.getSize();
+	cout << endl << "Cluster1 new" << endl << cluster1 << endl;
+	Cluster::Move(&cluster[9], &cluster, &cluster1).perform();
+	Cluster::Move(&cluster[8], &cluster, &cluster1).perform();
+	Cluster::Move(&cluster[7], &cluster, &cluster1).perform();
+	Cluster::Move(&cluster[6], &cluster, &cluster1).perform();
+	Cluster::Move(&cluster[5], &cluster, &cluster1).perform();
+	cout << "Cluster1" << endl << cluster1;
+	cout << endl;
+	cout << "Cluster" << endl << cluster;
+	cout << interClusterDistance(cluster, cluster1) << endl;
+	cout << "end interclusterdistance test" << endl;
+
+	// GET CLUSTER EDGES
+	cout << "cluster edges: " << endl << cluster.getClusterEdges() << endl;
+
+	// INTERCLUSTER EDGES
+	cout << "InterCLuster edges" << endl << interClusterEdges(cluster, cluster1) << endl;
 	
     return 0;
 }
+

@@ -6,13 +6,14 @@
 #include<cassert>
 
 // CLASS: use shared pointers
+// TODO: Include dimentionality in constructors
 // TODO: everywhere a PointPtr is an argument it should be const
-// TODO: inner move class that forces you to never do an add without a remove
+// TODO: inner move class/perform
 // TODO: inner centroid class??
 // TODO: destructer deletes points?
 // TODO: make inner class friend of outer to access private members
 namespace clustering {
-
+	
 	typedef Point *PointPtr;
 	typedef struct LNode *LNodePtr;
 
@@ -26,21 +27,44 @@ namespace clustering {
 
 	private:
 
-		int size;
-		LNodePtr points;
-		Point __centroid;
+
+		/*******************************************************************
+		    *************       Member Variables      *******************
+		*******************************************************************/
+		
+		int size;				// Number of points in cluster
+		LNodePtr points;		// Pointer to first node of linked list
+		Point __centroid;		
+		bool validity;			// Flags whether or not centroid is valid
+		int __id;
 
 	public:
 
-		/***************        constructors            ********************/
+		/*******************************************************************
+		   *********************    Move Class   ***********************
+		*******************************************************************/
 
+		class Move {
+		private:
+			Cluster *_from;
+			Cluster *_to;
+			PointPtr point;
+		public:
+			Move(const PointPtr &ptr, Cluster *from, Cluster *to) : _from(from), _to(to), point(ptr) {};
+			void perform();
+		};
+
+		/*******************************************************************
+		    *************         Constructor        *******************
+		*******************************************************************/
+		//TODO:constructor that takes infile and centroid
 		// defaults to size 0 and null points
-		Cluster() : size(0), points(nullptr) {};
+		Cluster() : size(0), points(nullptr), __id(idGenerator()) {};
 
 
 
 		/*******************************************************************
-		      ****************        Big 3        ********************
+		     *****************        Big 3        ********************
 		*******************************************************************/
 
 		//copy constructor
@@ -67,54 +91,59 @@ namespace clustering {
 		// removes node at lastNode->next
 		void removeAfter(LNodePtr lastNode);			
 
-		//deletes all nodes of a cluster
+		// deletes all nodes of a cluster
 		void clear();	
 
-		//initialize centroid
-		void setCentroid(const Point&);
+		// initialize centroid with a copy of Point P
+		void setCentroid(const Point &p) { __centroid = p; validity = true; }
 
 		// compute centroid
 		void compCentroid();
+
+		// validates/invalidates cluster
+		void setValidity(bool v) { validity = v; }
+
+		// generates ids for clusters
+		static int idGenerator();
+
+		
+
+
 
 
 		/*******************************************************************
 		    *****************        Getters       *********************
 		*******************************************************************/
+
 		// returns size
 		int getSize() const { return size; };
 
 		// retuns centroid
-		const Point getCentroid() { return __centroid; }
+		Point getCentroid() const { return __centroid; }
 
 		// returns the number of lines in an input file
-		static int numLines(std::istream &in) {
-			
-			//save position of file pointer 
-			int pos = in.tellg();
-			
-			// account for possible eof bit
-			in.clear();			
+		static int numLines(std::istream &in);
 
-			// move file pointer to beginning of file
-			in.seekg(0);				
+		// returns validity
+		bool getValidity() const { return validity; }
 
-			std::string aString;			//holds unused information
-			int lines = 0;					//counts lines
+		// returns id
+		int getId() const { return __id; }
 
-			//count
-			while (getline(in, aString))
-				lines++;
+		// Picks k points from a cluster to serve as initial centroids
+		void pickPoints(int k, PointPtr*);
 
-			// clear eof bit
-			in.clear();		
+		// sum of distance between every two points in the cluster
+		double intraClusterDistance() const;
 
-			// recover previous position in file
-			in.seekg(pos);
+		// sum of distances between every pair of points between two clusters
+		friend double interClusterDistance(const Cluster &, const Cluster &);
 
-			return lines;
-		}
+		// number of pairs in a cluster
+		int getClusterEdges();
 
-
+		// number of pairs between clusters
+		friend double interClusterEdges(const Cluster &, const Cluster &);
 
 		/*******************************************************************
 			******************    Search functions    ******************
@@ -141,7 +170,7 @@ namespace clustering {
 
 		// in/out
 		friend std::ostream &operator<<(std::ostream &, const Cluster &);
-		friend std::istream &operator>>(std::istream &, Cluster &);
+		friend std::istream &operator>>(std::istream &, Cluster &);	// TODO: make use predefined dimensionality
 
 		// Union of two clusters
 		friend const Cluster operator+(const Cluster &, const Cluster &);	
@@ -154,6 +183,8 @@ namespace clustering {
 		// compare two clusters
 		friend bool operator==(const Cluster &, const Cluster &);
 		
+		// get pointer to point at index
+		Point &operator[](int);
 		
 
 			/*******functions that use Point objects************/
