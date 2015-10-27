@@ -326,7 +326,7 @@ int main() {
 	outFile.open("OutPut.txt");
 
 	int K = 4;
-	KMeans k(K, inFile, outFile);
+	KMeans k(K, inFile);
 
 	// algorithm//////////////////////////////////////
 	

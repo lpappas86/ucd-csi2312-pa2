@@ -2,12 +2,12 @@
 #include<vector>
 #include<cmath>
 namespace clustering {
-	KMeans::KMeans(unsigned int k, std::ifstream &inFile, std::ofstream &outFile)
+	KMeans::KMeans(unsigned int k, std::ifstream &inFile)
 	{
 		// set members
 		K = k;
 		in = &inFile;
-		out = &outFile;
+		out.open("Output.txt");
 		scoreDiff = SCORE_DIFF_THRESHOLD + 1;
 
 		// The algorithm
@@ -134,6 +134,13 @@ namespace clustering {
 		} while (scoreDiff >= SCORE_DIFF_THRESHOLD);
 	}
 
+	void KMeans::deleteClusters()
+	{
+		for (int i = 0; i < K; i++)
+			delete point_space[i];
+		delete[] point_space;
+	}
+
 	cPtr KMeans::getClusters(int index)
 	{
 		return point_space[index];
@@ -142,7 +149,7 @@ namespace clustering {
 	void KMeans::printResults()
 	{
 		for (int i = 0; i < K; i++)
-			*out << *point_space[i];
+			out << *point_space[i];
 	}
 
 }

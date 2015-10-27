@@ -28,7 +28,8 @@ namespace clustering {
 		// pointer to ifstream file for input
 		std::ifstream *in;
 
-		std::ofstream *out;
+		// output file
+		std::ofstream out;
 
 		// BetaCV score
 		double score;
@@ -44,7 +45,7 @@ namespace clustering {
 		*******************************************************************/
 
 		// Takes K and in file
-		KMeans(unsigned int, std::ifstream &, std::ofstream &);
+		KMeans(unsigned int, std::ifstream &);
 
 
 
@@ -66,6 +67,9 @@ namespace clustering {
 		double computeClusteringScore();
 
 		void recomputeClusters();
+
+		// deletes point space
+		void deleteClusters();
 
 
 

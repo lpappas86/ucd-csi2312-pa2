@@ -2,11 +2,9 @@
 
 namespace clustering {
 
-	Cluster::Cluster(unsigned dimension) : points(nullptr),  dimensionality(dimension), __centroid(dimensionality)
-	{
-		size = 0;
-		__id = idGenerator();
-	}
+	Cluster::Cluster(unsigned dimension) : points(nullptr), dimensionality(dimension), 
+		 __centroid(dimensionality), size(0), __id(idGenerator())
+	{}
 
 	Cluster::Cluster(const Cluster &cluster) : __centroid(dimensionality)
 	{
