@@ -330,24 +330,21 @@ int main() {
 
 	// algorithm//////////////////////////////////////
 	
-	// set up and initialization
-	k.createClusters();
-	k.readPoints();			//cout << "Initial Cluster: " << *k.getClusters(0) << endl;
-	k.setCentroids();		//cout << "Centroids: " << k.getClusters(0)->getCentroid() << k.getClusters(1)->getCentroid() << k.getClusters(2)->getCentroid() << k.getClusters(3)->getCentroid();
-	/*for (int i = 0; i < K; i++)
+		
+	//cout << "Centroids: " << k.getClusters(0)->getCentroid() << k.getClusters(1)->getCentroid() << k.getClusters(2)->getCentroid() << k.getClusters(3)->getCentroid();
+							//cout << "Initial Cluster: " << *k.getClusters(0) << endl;
+							/*for (int i = 0; i < K; i++)
 		cout << *k.getClusters(i);*/
 
 	// recoompute clusters
 	//cout << endl << k.computeClusteringScore() << endl;
-	k.recomputeClusters();
-	k.printResults();
 
 
 
 	/*for (int i = 0; i < K; i++)
 		cout << endl << "Cluster " << i << ": " <<  *k.getClusters(i) << endl;*/
 
-	cout << "Centroids: " << k.getClusters(0)->getCentroid() << k.getClusters(1)->getCentroid() << k.getClusters(2)->getCentroid() << k.getClusters(3)->getCentroid();
+	//cout << "Centroids: " << k.getClusters(0)->getCentroid() << k.getClusters(1)->getCentroid() << k.getClusters(2)->getCentroid() << k.getClusters(3)->getCentroid();
 
     return 0;
 }

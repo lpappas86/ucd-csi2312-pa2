@@ -4,11 +4,19 @@
 namespace clustering {
 	KMeans::KMeans(unsigned int k, std::ifstream &inFile, std::ofstream &outFile)
 	{
-		// set K to user input
+		// set members
 		K = k;
 		in = &inFile;
 		out = &outFile;
 		scoreDiff = SCORE_DIFF_THRESHOLD + 1;
+
+		// The algorithm
+		createClusters();
+		readPoints();
+		setCentroids();
+		recomputeClusters();
+		printResults();
+
 	}
 
 	void KMeans::createClusters()
