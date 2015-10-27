@@ -1,5 +1,4 @@
 #include "Point.h"
-//ASK: operator>> wtf?
 namespace clustering {
 
 	// Constructors
@@ -52,14 +51,12 @@ namespace clustering {
 		return sqrt(sum);
 	}
 
-	// TODO: update this
 	std::ostream &operator<<(std::ostream &output, const Point &point) {
-		output << "(" << point.values[0];
+		output << point.values[0];
 		for (int i = 1; i < point.dim; i++) {
 			output << "," << point.values[i];
 		}
-		output << ")" << std::endl;
-
+		output << " ";
 		return output;
 	}
 
@@ -118,10 +115,12 @@ namespace clustering {
 		if (RHS == LHS)
 			return false;
 		for (int i = 0; i < LHS.getDims(); i++) {
-			if (LHS.getvalues(i) > RHS.getvalues(i))
-				return false;
+			if (LHS.getvalues(i) < RHS.getvalues(i))
+				return true;
+			else if (LHS.getvalues(i) > RHS.getvalues(i))
+				break;
 		}
-		return true;
+		return false;
 	}
 
 	bool operator>(const Point &LHS, const Point &RHS) {
@@ -129,10 +128,12 @@ namespace clustering {
 		if (RHS == LHS)
 			return false;
 		for (int i = 0; i < LHS.getDims(); i++) {
-			if (LHS.getvalues(i) < RHS.getvalues(i))
-				return false;
+			if (LHS.getvalues(i) > RHS.getvalues(i))
+				return true;
+			else if (LHS.getvalues(i) < RHS.getvalues(i))
+				break;
 		}
-		return true;
+		return false;
 	}
 
 	bool operator<=(const Point &LHS, const Point &RHS) {

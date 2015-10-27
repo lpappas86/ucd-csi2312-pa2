@@ -2,9 +2,16 @@
 
 namespace clustering {
 
-	Cluster::Cluster(const Cluster &cluster)
+	Cluster::Cluster(unsigned dimension) : points(nullptr),  dimensionality(dimension), __centroid(dimensionality)
+	{
+		size = 0;
+		__id = idGenerator();
+	}
+
+	Cluster::Cluster(const Cluster &cluster) : __centroid(dimensionality)
 	{
 		size = cluster.size;
+		dimensionality = cluster.dimensionality;
 		setCentroid(cluster.__centroid);
 		__id = idGenerator();
 
@@ -40,6 +47,7 @@ namespace clustering {
 		clear();		//free up memory
 		
 		size = cluster.size;
+		dimensionality = cluster.dimensionality;
 		setCentroid(cluster.__centroid);
 
 		//case: cluster is empty
@@ -291,7 +299,7 @@ namespace clustering {
 		pointArray[k - 1] = node->p;
 	}
 
-	const LNodePtr Cluster::find(PointPtr point) const
+	const LNodePtr Cluster::find(const PointPtr point) const
 	{
 		if (points == NULL)
 			return NULL;
@@ -357,15 +365,14 @@ namespace clustering {
 		return c1.getSize() * c2.getSize();
 	}
 
-	std::ostream & operator<<(std::ostream &output, const Cluster &cluster) {
+	std::ostream & operator<<(std::ofstream &output, const Cluster &cluster) {
 		LNodePtr ptr = cluster.points;
-		output << "Size: " << cluster.getSize() << std::endl;
 		if (cluster.points == NULL)
-			output << "The cluster is empty" << std::endl;
+			output << "The cluster is empty";
 		else {
 			int count = 1;
 			for (ptr; ptr != NULL; ptr = ptr->next) {
-				output << count << ":\t" << *ptr->p;
+				output  << *ptr->p << " : " << std::to_string(cluster.__id) << std::endl;;
 				count++;
 			}
 		}
@@ -386,7 +393,6 @@ namespace clustering {
 			point = new Point(Point::getInFileDim(line));
 			line >> *point;
 			cluster.add(point);
-			//ptrArray[i] = point; 
 		}
 		cluster.compCentroid();
 		return in;
@@ -398,7 +404,7 @@ namespace clustering {
 
 	const Cluster operator+(const Cluster &LHS, const Cluster &RHS)
 	{
-		Cluster cluster;						//cluster to be returned
+		Cluster cluster(LHS.dimensionality);						//cluster to be returned
 		Cluster difference1 = LHS - RHS;		//LHS unshared points
 		Cluster difference2 = RHS - LHS;		//RHS unshared Points
 		Cluster shared = LHS - difference1;		//points shared by LHS and RHS

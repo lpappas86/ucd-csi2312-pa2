@@ -4,14 +4,8 @@
 #include"Point.h"
 #include<iostream>
 #include<cassert>
+#include<string>
 
-// CLASS: use shared pointers
-// TODO: Include dimentionality in constructors
-// TODO: everywhere a PointPtr is an argument it should be const
-// TODO: inner move class/perform
-// TODO: inner centroid class??
-// TODO: destructer deletes points?
-// TODO: make inner class friend of outer to access private members
 namespace clustering {
 	
 	typedef Point *PointPtr;
@@ -34,9 +28,11 @@ namespace clustering {
 		
 		int size;				// Number of points in cluster
 		LNodePtr points;		// Pointer to first node of linked list
-		Point __centroid;		
+		unsigned dimensionality;	//dimension of points to go in cluster
+			
 		bool validity;			// Flags whether or not centroid is valid
 		int __id;
+		Point __centroid;
 
 	public:
 
@@ -57,9 +53,9 @@ namespace clustering {
 		/*******************************************************************
 		    *************         Constructor        *******************
 		*******************************************************************/
-		//TODO:constructor that takes infile and centroid
+
 		// defaults to size 0 and null points
-		Cluster() : size(0), points(nullptr), __id(idGenerator()) {};
+		Cluster(unsigned);
 
 
 
@@ -131,7 +127,7 @@ namespace clustering {
 		int getId() const { return __id; }
 
 		// Picks k points from a cluster to serve as initial centroids
-		void pickPoints(int k, PointPtr*);
+		void pickPoints(int k,  PointPtr*);
 
 		// sum of distance between every two points in the cluster
 		double intraClusterDistance() const;
@@ -154,7 +150,7 @@ namespace clustering {
 		// to access correct node use "find(pointPtr)->next"
 		// returns NULL if point not found
 		// Dynamically creates LNode if point is found in first node
-		const LNodePtr find(PointPtr) const;	
+		const LNodePtr find(const PointPtr) const;	
 
 		// Finds the first instance of a point in a linked list
 		//returns pointer to node before position where point is found
@@ -169,8 +165,8 @@ namespace clustering {
 		*******************************************************************/
 
 		// in/out
-		friend std::ostream &operator<<(std::ostream &, const Cluster &);
-		friend std::istream &operator>>(std::istream &, Cluster &);	// TODO: make use predefined dimensionality
+		friend std::ostream &operator<<(std::ofstream &, const Cluster &);
+		friend std::istream &operator>>(std::istream &, Cluster &);	
 
 		// Union of two clusters
 		friend const Cluster operator+(const Cluster &, const Cluster &);	

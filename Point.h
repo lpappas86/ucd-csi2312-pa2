@@ -21,9 +21,6 @@ namespace clustering {
 		     ****************     Constructors      *********************
 		*******************************************************************/
 		
-		// Creates a 0 dimensional point to be initialized later
-		Point() : dim(0) {};
-
 		//initializes point with dimension dim and all values = 0
 		Point(unsigned dim);			
 
