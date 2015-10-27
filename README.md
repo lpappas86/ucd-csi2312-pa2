@@ -16,3 +16,5 @@ Cluster represents a collection of points. It uses a dynamically allocated singl
     
   
 This was origionally compiled in Visual Studio Proffessional 2015 and checked to run in CLION with GCC
+
+The KMeans class implements cluster and point. It takes in K = number of clusters to create, and an input file with comma       delimited  points. It outputs the points with the cluster ID in output.txt. The constructor is the only function that needs to be called by the user.
