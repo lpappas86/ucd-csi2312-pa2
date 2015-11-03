@@ -1,6 +1,8 @@
 #include "KMeans.h"
 #include<vector>
 #include<cmath>
+#include <limits>
+
 namespace clustering {
 	KMeans::KMeans(unsigned int k, std::ifstream &inFile)
 	{
@@ -94,17 +96,17 @@ namespace clustering {
 				//	loop through all points
 				for (int j = (point_space[i]->getSize() - 1); j >= 0 ; j--) {
 					// set minDistance of cluster's first point to the distance to its own centroid
-					minDistance = INT_MAX;
+					minDistance = std::numeric_limits<double>::max();
 					//	find the min distance(point, centroid)
 					for (int h = 0; h < K; h++ ) {
-
-						double newDistance = (*point_space[i])[j].distanceTo(point_space[h]->getCentroid());
+						Point p = point_space[h]->getCentroid();
+						double newDistance = (*point_space[i])[j].distanceTo(p);
 						if (newDistance < minDistance) {
 							minDistance = newDistance;
 							newIndex = h;
 						}
 					}
-					
+
 					//	if centroid not of current cluster
 					if (newIndex != i) {
 						// perform move(point, current, other)

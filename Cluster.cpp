@@ -1,10 +1,10 @@
 #include "Cluster.h"
 
+
 namespace clustering {
 
 	Cluster::Cluster(unsigned dimension) : points(nullptr), dimensionality(dimension), 
-		 __centroid(dimensionality), size(0), __id(idGenerator())
-	{}
+		 __centroid(dimensionality), size(0), __id(idGenerator()){}
 
 	Cluster::Cluster(const Cluster &cluster) : __centroid(dimensionality)
 	{
@@ -370,7 +370,7 @@ namespace clustering {
 		else {
 			int count = 1;
 			for (ptr; ptr != NULL; ptr = ptr->next) {
-				output  << *ptr->p << " : " << std::to_string(cluster.__id) << std::endl;;
+				output  << *ptr->p << " : " << cluster.__id << std::endl;;
 				count++;
 			}
 		}

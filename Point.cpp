@@ -75,10 +75,12 @@ namespace clustering {
 		int count = 0;
 		while(in.good()){
 			getline(in, dString, ',');
-			point.setDim(count, std::stod(dString));
+			char* cstr = new char [dString.length()+1];
+			std::strcpy (cstr, dString.c_str());
+			point.setDim(count, atof(cstr) );
 			count++;
 		}
-		
+
 		return in;
 	}
 

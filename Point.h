@@ -6,7 +6,8 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-
+#include<cstring>
+#include <stdlib.h>
 namespace clustering {
 
 	class Point {
