@@ -4,8 +4,10 @@
 #include"KMeans.h"
 
 
+
 using namespace std;
 using namespace clustering;
+
 
 int main() {
  //   double d[] = {2,3};
@@ -319,12 +321,12 @@ int main() {
 	//inFile >> cluster;
 	//cout << cluster << endl;
 
-	if (!inFile) cout << "WTF" << endl;
-	else cout << "sweet" << endl;
+	cout << (!inFile ? "WTF" : "sweet") << endl;
 
 	ofstream outFile;
 	outFile.open("OutPut.txt");
-
+	if(!outFile) cout << "WTF2" << endl;
+	else cout << "Sweet2" << endl;
 	int K = 4;
 	KMeans k(K, inFile);
 

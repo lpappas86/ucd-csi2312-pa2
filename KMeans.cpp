@@ -18,7 +18,7 @@ namespace clustering {
 		setCentroids();
 		recomputeClusters();
 		printResults();
-
+		
 	}
 
 	void KMeans::createClusters()

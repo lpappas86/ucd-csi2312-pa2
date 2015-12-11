@@ -1,4 +1,6 @@
 #include "Point.h"
+
+
 namespace clustering {
 
 	// Constructors
@@ -62,13 +64,7 @@ namespace clustering {
 
 	std::istream & operator>>(std::istream &in, Point &point)
 	{
-		
-		//assert(Point::getInFileDim(in) == point.getDims());
-		//std::string lineString;			// holds line from input file
-		//getline(in, lineString);
-
-		//convert to stringStream
-		//std::stringstream line(lineString);		
+	
 
 		//put values in points
 		std::string dString;
