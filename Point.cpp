@@ -1,7 +1,7 @@
 #include "Point.h"
 
 
-namespace clustering {
+namespace Clustering {
 
 	// Constructors
 
@@ -34,21 +34,34 @@ namespace clustering {
 		delete[] values;
 	}
 
-	void Point::setDim(int index, double val) {
+	void Point::setValue(int index, double val) {		//CHANGED: see below
+		index--;
 		assert(index >= 0 && index < dim);
 		values[index] = val;
 	}
 
-	double Point::getvalues(int index) const {
+
+	//void Point::setValue(int index, double val) {				//CHANGED: see above
+	//	assert(index >= 0 && index < dim);
+	//	values[index] = val;
+	//}
+
+	double Point::getValue(int index) const {					//CHANGED: see below
+		index--;
 		return values[index];
 	}
+
+
+	//double Point::getValue(int index) const {					CHANGED: see above
+	//	return values[index];
+	//}
 
 
 	double Point::distanceTo(Point& p) {
 		assert(dim == p.dim);
 		double sum = 0;
 		for (int i = 0; i < dim; i++) {
-			sum += (values[i] - p.getvalues(i))*(values[i] - p.getvalues(i));
+			sum += (values[i] - p.getValue(i))*(values[i] - p.getValue(i));
 		}
 		return sqrt(sum);
 	}
@@ -68,17 +81,24 @@ namespace clustering {
 
 		//put values in points
 		std::string dString;
-		int count = 0;
+		int count = 1;
 		while(in.good()){
 			getline(in, dString, ',');
 			char* cstr = new char [dString.length()+1];
 			std::strcpy (cstr, dString.c_str());
-			point.setDim(count, atof(cstr) );
+			point.setValue(count, atof(cstr) );
 			count++;
 		}
 
 		return in;
 	}
+
+	double &Point::operator[](int dimension) {
+		dimension--;
+		assert(dimension >= 0 && dimension < dim);
+		return values[dimension];
+	}
+
 
 
 	Point &Point::operator=(const Point &p) {
@@ -95,7 +115,7 @@ namespace clustering {
 		if (LHS.getDims() != RHS.getDims())
 			return false;
 		for (int i = 0; i < RHS.getDims(); i++) {
-			if (LHS.getvalues(i) != RHS.getvalues(i))
+			if (LHS.getValue(i) != RHS.getValue(i))
 				return false;
 		}
 
@@ -113,9 +133,9 @@ namespace clustering {
 		if (RHS == LHS)
 			return false;
 		for (int i = 0; i < LHS.getDims(); i++) {
-			if (LHS.getvalues(i) < RHS.getvalues(i))
+			if (LHS.getValue(i) < RHS.getValue(i))
 				return true;
-			else if (LHS.getvalues(i) > RHS.getvalues(i))
+			else if (LHS.getValue(i) > RHS.getValue(i))
 				break;
 		}
 		return false;
@@ -126,9 +146,9 @@ namespace clustering {
 		if (RHS == LHS)
 			return false;
 		for (int i = 0; i < LHS.getDims(); i++) {
-			if (LHS.getvalues(i) > RHS.getvalues(i))
+			if (LHS.getValue(i) > RHS.getValue(i))
 				return true;
-			else if (LHS.getvalues(i) < RHS.getvalues(i))
+			else if (LHS.getValue(i) < RHS.getValue(i))
 				break;
 		}
 		return false;
@@ -150,7 +170,7 @@ namespace clustering {
 		assert(LHS.getDims() == RHS.getDims());
 		Point P(LHS.getDims());
 		for (int i = 0; i < RHS.getDims(); i++)
-			P.values[i] = LHS.getvalues(i) + RHS.getvalues(i);
+			P.values[i] = LHS.getValue(i) + RHS.getValue(i);
 		return P;
 	}
 
@@ -158,7 +178,7 @@ namespace clustering {
 		assert(LHS.getDims() == RHS.getDims());
 		Point P(LHS.getDims());
 		for (int i = 0; i < RHS.getDims(); i++)
-			P.values[i] = LHS.getvalues(i) - RHS.getvalues(i);
+			P.values[i] = LHS.getValue(i) - RHS.getValue(i);
 		return P;
 	}
 

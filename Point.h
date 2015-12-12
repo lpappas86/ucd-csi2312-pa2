@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 
-namespace clustering {
+namespace Clustering {
 
 	class Point {
 
@@ -43,7 +43,7 @@ namespace clustering {
 		*******************************************************************/
 
 		//sets point value at dimension of index to val
-		void setDim(int index, double val);  
+		void setValue(int index, double val);  
 
 
 
@@ -55,7 +55,7 @@ namespace clustering {
 		int getDims() const { return dim; };				
 		
 		//returns value at dimenstion of index
-		double getvalues(int index) const;                  
+		double getValue(int index) const;                  
 		
 																	
 
@@ -95,6 +95,7 @@ namespace clustering {
 		     ****************  Overloaded operators   ****************
 		*******************************************************************/
 
+		double &operator[](int);
 		Point &operator=(const Point &);
 		friend std::ostream &operator<<(std::ostream &, const Point &);
 		friend std::istream &operator>>(std::istream &, Point &);
