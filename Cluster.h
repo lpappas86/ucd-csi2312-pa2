@@ -4,8 +4,9 @@
 #include"Point.h"
 #include<iostream>
 #include<cassert>
+#include<sstream>
 
-namespace clustering {
+namespace Clustering {
 
 	typedef Point *PointPtr;
 	typedef struct LNode *LNodePtr;
@@ -56,6 +57,10 @@ namespace clustering {
 		//getters
 		int getSize() const { return size; };
 
+		// returns the number of lines in an input file 
+		static int numLines(std::istream &in);
+
+
 
 
 		/*******************************************************************
@@ -82,6 +87,7 @@ namespace clustering {
 		*******************************************************************/
 
 		friend std::ostream &operator<<(std::ostream &, const Cluster &);
+		friend std::istream &operator>>(std::istream &, Cluster &);
 		friend const Cluster operator+(const Cluster &, const Cluster &);		//Union of two clusters
 		friend const Cluster operator-(const Cluster &, const Cluster &);
 		friend bool operator==(const Cluster &, const Cluster &);
@@ -90,9 +96,13 @@ namespace clustering {
 
 			/*******functions that use Point objects************/
 		friend const Cluster operator+(const Cluster &, const Point &);			//adds a point object to cluster
+		friend const Cluster operator+(const Cluster &, const PointPtr);			//adds a point object to cluster
 		friend const Cluster operator-(const Cluster &, const Point &);			//removes all points with values equal to point parameter
+		friend const Cluster operator-(const Cluster &, const PointPtr);			//removes all points with values equal to point parameter
 		friend Cluster &operator+=(Cluster &, const Point &);
+		friend Cluster &operator+=(Cluster &, const PointPtr);
 		friend Cluster &operator-=(Cluster &, const Point &);
+		friend Cluster &operator-=(Cluster &, const PointPtr);
 	};	
 }
 #endif

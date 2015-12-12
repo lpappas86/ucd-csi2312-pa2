@@ -1,6 +1,6 @@
 #include "Cluster.h"
 
-namespace clustering {
+namespace Clustering {
 
 	Cluster::Cluster(const Cluster &cluster)
 	{
@@ -103,9 +103,9 @@ namespace clustering {
 			return;
 		}
 
-		LNodePtr last = nullptr;
-
-		while ( *p > *ptr->p) {											//put in lexographic order
+		LNodePtr last = nullptr;			
+			
+		while ( *p > *ptr->p) {										//put in lexographic order
 			last = ptr;
 			if (ptr->next == NULL) {//if end of list
 				node->next = nullptr;
@@ -126,7 +126,10 @@ namespace clustering {
 		}
 
 		node->next = ptr;
-		last->next = node;
+		if (last != nullptr)			
+			last->next = node;
+		else
+			points = node;				
 	}
 
 	const PointPtr & Cluster::remove(const PointPtr &point)
@@ -184,6 +187,34 @@ namespace clustering {
 		points = nullptr;
 	}
 
+	int Cluster::numLines(std::istream & in)
+		{
+	
+	 		//save position of file pointer  
+			int pos = in.tellg();
+	
+	 		// account for possible eof bit 
+	 		in.clear();
+	
+	 		// move file pointer to beginning of file 
+	 		in.seekg(0);
+	
+	 		std::string aString;			//holds unused information 
+	 		int lines = 0;					//counts lines 
+	
+	 		while (getline(in, aString))
+	 			lines++;
+	
+			// clear eof bit 
+			in.clear();
+		
+			// recover previous position in file 
+			in.seekg(pos);
+	
+			return lines;
+	}
+
+
 	const LNodePtr Cluster::find(PointPtr point) const
 	{
 		if (points == NULL)
@@ -227,17 +258,34 @@ namespace clustering {
 
 	std::ostream & operator<<(std::ostream &output, const Cluster &cluster) {
 		LNodePtr ptr = cluster.points;
-		output << "Size: " << cluster.getSize() << std::endl;
 		if (cluster.points == NULL)
 			output << "The cluster is empty" << std::endl;
 		else {
 			int count = 1;
 			for (ptr; ptr != NULL; ptr = ptr->next) {
-				output << count << ":\t" << *ptr->p;
+				output << *ptr->p;				
 				count++;
 			}
 		}
 		return output;
+	}
+
+	std::istream & operator>>(std::istream &in, Cluster &cluster)
+	{
+		// get number of points coming in 
+		int numPoints = Cluster::numLines(in);
+		PointPtr point = nullptr;			//points to a point 
+		std::string lineString;				// holds line from input file 
+
+			//convert to stringStream 
+		for (int i = 0; i < numPoints; i++) {		
+			getline(in, lineString);
+			std::stringstream line(lineString);
+			point = new Point(Point::getInFileDim(line));
+			line >> *point;
+			cluster.add(point);
+		}
+		return in;
 	}
 
 	const Cluster operator+(const Cluster &LHS, const Cluster &RHS)
@@ -304,11 +352,18 @@ namespace clustering {
 		return LHS;
 	}
 
+	const Cluster operator+(const Cluster &cluster, const PointPtr Point)
+	{		
+		Cluster c(cluster);
+		c.add(Point);
+		return c;
+	}
+
 	const Cluster operator+(const Cluster &cluster, const Point &point)
 	{
 		//dynamically allocate point object
 		PointPtr p = new Point(point);
-		
+
 		Cluster c(cluster);
 		c.add(p);
 		return c;
@@ -330,7 +385,29 @@ namespace clustering {
 		return newCluster;
 	}
 
+	const Cluster operator-(const Cluster &cluster, const PointPtr point)
+	{
+		Cluster newCluster(cluster);
+		LNodePtr node = cluster.find(point);
+
+		if (node == NULL)
+			std::cout << "Can't Remove: The point was not found" << std::endl;
+
+		while (node != NULL) {
+			node = newCluster.find(point);			
+			newCluster.removeAfter(node);
+		}
+
+		return newCluster;
+	}
+
 	Cluster & operator+=(Cluster &cluster, const Point &point)
+	{
+		cluster = cluster + point;
+		return cluster;
+	}
+
+	Cluster & operator+=(Cluster &cluster, const PointPtr point)
 	{
 		cluster = cluster + point;
 		return cluster;
@@ -342,6 +419,11 @@ namespace clustering {
 		return cluster;
 	}
 
-
+	Cluster & operator-=(Cluster &cluster, const PointPtr point)
+	{
+		cluster = cluster - *point;
+		return cluster;
+	}
 	
 }
+

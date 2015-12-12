@@ -1,6 +1,6 @@
 #include "Point.h"
 
-namespace clustering {
+namespace Clustering {
 
 	// Constructors
 	Point::Point(int d) {
@@ -35,13 +35,15 @@ namespace clustering {
 
 	// Mutator methods
 	// Change the values of dimension index to val
-	void Point::setDim(int index, double val) {
+	void Point::setValue(int index, double val) {
+		index--;		
 		assert(index >= 0 && index < dim);
 		values[index] = val;
 	}
 	// Accessors
 	// Return the current values of private member variables
-	double Point::getvalues(int index) const {
+	double Point::getValue(int index) const {
+		index--;			
 		return values[index];
 	}
 
@@ -51,21 +53,38 @@ namespace clustering {
 		assert(dim == p.dim);
 		double sum = 0;
 		for (int i = 0; i < dim; i++) {
-			sum += (values[i] - p.getvalues(i))*(values[i] - p.getvalues(i));
+			sum += (values[i] - p.getValue(i + 1))*(values[i] - p.getValue(i + 1));
 		}
 		return sqrt(sum);
 	}
 
 
 	std::ostream &operator<<(std::ostream &output, const Point &point) {
-		output << "(" << point.values[0];
+		output << point.values[0];					
 		for (int i = 1; i < point.dim; i++) {
-			output << "," << point.values[i];
+			output << "," << point.values[i];	
 		}
-		output << ")" << std::endl;
+		output << std::endl;						
 
 		return output;
 	}
+
+	std::istream & operator>>(std::istream &in, Point &point)
+	{
+		
+		std::string dString;
+		int count = 1;				
+		while (in.good()) {
+			getline(in, dString, ',');
+			char* cstr = new char[dString.length() + 1];
+			std::strcpy(cstr, dString.c_str());
+			point.setValue(count, atof(cstr));
+			count++;
+		}
+		
+		return in;
+	}
+
 
 
 	Point &Point::operator=(const Point &p) {
@@ -78,11 +97,17 @@ namespace clustering {
 		return *this;
 	}
 
+	double &Point::operator[](int dimension) {
+		dimension--;		
+		assert(dimension >= 0 && dimension < dim);
+		return values[dimension];
+	}
+
 	bool operator==(const Point &LHS, const Point &RHS) {
 		if (LHS.getDims() != RHS.getDims())
 			return false;
-		for (int i = 0; i < RHS.getDims(); i++) {
-			if (LHS.getvalues(i) != RHS.getvalues(i))
+		for (int i = 1; i < RHS.getDims() + 1; i++) {				
+			if (LHS.getValue(i) != RHS.getValue(i))
 				return false;
 		}
 
@@ -97,24 +122,20 @@ namespace clustering {
 
 	bool operator<(const Point &LHS, const Point &RHS) {
 		assert(LHS.dim == RHS.dim);
-		if (RHS == LHS)
-			return false;
-		for (int i = 0; i < LHS.getDims(); i++) {
-			if (LHS.getvalues(i) > RHS.getvalues(i))
-				return false;
+		for (int i = 1; i < LHS.getDims() + 1; i++) {			
+			if (LHS.getValue(i) < RHS.getValue(i))
+				return true;
 		}
-		return true;
+		return false;
 	}
 
 	bool operator>(const Point &LHS, const Point &RHS) {
 		assert(LHS.dim == RHS.dim);
-		if (RHS == LHS)
-			return false;
-		for (int i = 0; i < LHS.getDims(); i++) {
-			if (LHS.getvalues(i) < RHS.getvalues(i))
-				return false;
+		for (int i = 1; i < LHS.getDims() + 1; i++) {			
+			if (LHS.getValue(i) > RHS.getValue(i))
+				return true;
 		}
-		return true;
+		return false;
 	}
 
 	bool operator<=(const Point &LHS, const Point &RHS) {
@@ -132,8 +153,8 @@ namespace clustering {
 	const Point operator+(const Point &LHS, const Point &RHS) {
 		assert(LHS.getDims() == RHS.getDims());
 		Point P(LHS.getDims());
-		for (int i = 0; i < RHS.getDims(); i++)
-			P.values[i] = LHS.getvalues(i) + RHS.getvalues(i);
+		for (int i = 0; i < RHS.getDims(); i++)				
+			P.values[i] = LHS.getValue(i + 1) + RHS.getValue(i + 1);
 		return P;
 	}
 
@@ -141,7 +162,7 @@ namespace clustering {
 		assert(LHS.getDims() == RHS.getDims());
 		Point P(LHS.getDims());
 		for (int i = 0; i < RHS.getDims(); i++)
-			P.values[i] = LHS.getvalues(i) - RHS.getvalues(i);
+			P.values[i] = LHS.getValue(i + 1) - RHS.getValue(i + 1);
 		return P;
 	}
 
