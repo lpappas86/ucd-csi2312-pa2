@@ -34,34 +34,22 @@ namespace Clustering {
 		delete[] values;
 	}
 
-	void Point::setValue(int index, double val) {		//CHANGED: see below
+	void Point::setValue(int index, double val) {		
 		index--;
 		assert(index >= 0 && index < dim);
 		values[index] = val;
 	}
 
-
-	//void Point::setValue(int index, double val) {				//CHANGED: see above
-	//	assert(index >= 0 && index < dim);
-	//	values[index] = val;
-	//}
-
-	double Point::getValue(int index) const {					//CHANGED: see below
+	double Point::getValue(int index) const {					
 		index--;
 		return values[index];
 	}
-
-
-	//double Point::getValue(int index) const {					CHANGED: see above
-	//	return values[index];
-	//}
-
 
 	double Point::distanceTo(Point& p) {
 		assert(dim == p.dim);
 		double sum = 0;
 		for (int i = 0; i < dim; i++) {
-			sum += (values[i] - p.getValue(i))*(values[i] - p.getValue(i));
+			sum += (values[i] - p.getValue(i + 1))*(values[i] - p.getValue(i + 1));
 		}
 		return sqrt(sum);
 	}
@@ -114,7 +102,7 @@ namespace Clustering {
 	bool operator==(const Point &LHS, const Point &RHS) {
 		if (LHS.getDims() != RHS.getDims())
 			return false;
-		for (int i = 0; i < RHS.getDims(); i++) {
+		for (int i = 1; i < RHS.getDims() + 1; i++) {
 			if (LHS.getValue(i) != RHS.getValue(i))
 				return false;
 		}
@@ -128,28 +116,21 @@ namespace Clustering {
 		return true;
 	}
 
+
 	bool operator<(const Point &LHS, const Point &RHS) {
 		assert(LHS.dim == RHS.dim);
-		if (RHS == LHS)
-			return false;
-		for (int i = 0; i < LHS.getDims(); i++) {
+		for (int i = 1; i < LHS.getDims() + 1; i++) {
 			if (LHS.getValue(i) < RHS.getValue(i))
 				return true;
-			else if (LHS.getValue(i) > RHS.getValue(i))
-				break;
 		}
 		return false;
 	}
 
 	bool operator>(const Point &LHS, const Point &RHS) {
 		assert(LHS.dim == RHS.dim);
-		if (RHS == LHS)
-			return false;
-		for (int i = 0; i < LHS.getDims(); i++) {
+		for (int i = 1; i < LHS.getDims() + 1; i++) {
 			if (LHS.getValue(i) > RHS.getValue(i))
 				return true;
-			else if (LHS.getValue(i) < RHS.getValue(i))
-				break;
 		}
 		return false;
 	}
@@ -170,7 +151,7 @@ namespace Clustering {
 		assert(LHS.getDims() == RHS.getDims());
 		Point P(LHS.getDims());
 		for (int i = 0; i < RHS.getDims(); i++)
-			P.values[i] = LHS.getValue(i) + RHS.getValue(i);
+			P.values[i] = LHS.getValue(i + 1) + RHS.getValue(i + 1);
 		return P;
 	}
 
@@ -178,7 +159,7 @@ namespace Clustering {
 		assert(LHS.getDims() == RHS.getDims());
 		Point P(LHS.getDims());
 		for (int i = 0; i < RHS.getDims(); i++)
-			P.values[i] = LHS.getValue(i) - RHS.getValue(i);
+			P.values[i] = LHS.getValue(i + 1) - RHS.getValue(i + 1);
 		return P;
 	}
 

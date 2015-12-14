@@ -6,7 +6,7 @@
 #include<cassert>
 #include<string>
 
-namespace clustering {
+namespace Clustering {
 	
 	typedef Point *PointPtr;
 	typedef struct LNode *LNodePtr;
@@ -94,7 +94,7 @@ namespace clustering {
 		void setCentroid(const Point &p) { __centroid = p; validity = true; }
 
 		// compute centroid
-		void compCentroid();
+		void computeCentroid();
 
 		// validates/invalidates cluster
 		void setValidity(bool v) { validity = v; }
@@ -121,7 +121,7 @@ namespace clustering {
 		static int numLines(std::istream &in);
 
 		// returns validity
-		bool getValidity() const { return validity; }
+		bool isCentroidValid() const { return validity; }
 
 		// returns id
 		int getId() const { return __id; }
@@ -152,6 +152,10 @@ namespace clustering {
 		// Dynamically creates LNode if point is found in first node
 		const LNodePtr find(const PointPtr) const;	
 
+		// added to work with test suite
+		// calls find function and returns a bool
+		bool contains(const PointPtr &ptr) const;			
+
 		// Finds the first instance of a point in a linked list
 		//returns pointer to node before position where point is found
 		//to access correct node use "find(point)->next"
@@ -165,7 +169,7 @@ namespace clustering {
 		*******************************************************************/
 
 		// in/out
-		friend std::ostream &operator<<(std::ofstream &, const Cluster &);
+		friend std::ostream &operator<<(std::ostream &, const Cluster &);
 		friend std::istream &operator>>(std::istream &, Cluster &);	
 
 		// Union of two clusters
@@ -180,17 +184,19 @@ namespace clustering {
 		friend bool operator==(const Cluster &, const Cluster &);
 		
 		// get pointer to point at index
-		Point &operator[](int);
+		PointPtr &operator[](int);				
 		
 
 			/*******functions that use Point objects************/
 
 		//add a point object to cluster
-		friend const Cluster operator+(const Cluster &, const Point &);		
+		friend const Cluster operator+(const Cluster &, const Point &);
+		friend const Cluster operator+(const Cluster &, const PointPtr);
 		friend Cluster &operator+=(Cluster &, const Point &);
 
 		//remove all points with values equal to point parameter
-		friend const Cluster operator-(const Cluster &, const Point &);			
+		friend const Cluster operator-(const Cluster &, const Point &);
+		friend const Cluster operator-(const Cluster &, const PointPtr);
 		friend Cluster &operator-=(Cluster &, const Point &);
 	};	
 }

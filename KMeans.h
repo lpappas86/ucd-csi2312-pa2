@@ -3,8 +3,9 @@
 
 #include "Cluster.h"
 #include<fstream>
+#include<iostream>
 
-namespace clustering {
+namespace Clustering {
 
 	// terminates kmeans loop
 	static const double SCORE_DIFF_THRESHOLD = .0001;				
@@ -37,6 +38,9 @@ namespace clustering {
 		// Difference of score between iterations
 		double scoreDiff;
 
+		// Dimension of points
+		unsigned int dimension;
+
 	public:
 
 
@@ -45,7 +49,7 @@ namespace clustering {
 		*******************************************************************/
 
 		// Takes K and in file
-		KMeans(unsigned int, std::ifstream &);
+		KMeans(unsigned int, unsigned int, std::string);
 
 
 
@@ -71,16 +75,26 @@ namespace clustering {
 		// deletes point space
 		void deleteClusters();
 
+		void run();
+
 
 
 		/*******************************************************************
 	 	     ***********       Accessor Functions        ***************
 		*******************************************************************/
 		
+		Cluster &operator[](unsigned int u);
+		const Cluster &operator[](unsigned int index) const;
+
+		friend std::ostream &operator<<(std::ostream &os, const KMeans &kmeans);
+
 		// gets cluster at array index
 		cPtr getClusters(int);
 
 		void printResults();
+
+		double getScore() const { return score; }
+
 	};
 
 };

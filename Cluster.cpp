@@ -1,17 +1,22 @@
 #include "Cluster.h"
 
 
-namespace clustering {
+namespace Clustering {
 
-	Cluster::Cluster(unsigned dimension) : points(nullptr), dimensionality(dimension), 
-		 __centroid(dimensionality), size(0), __id(idGenerator()){}
+	Cluster::Cluster(unsigned dimension) : 
+		points(nullptr), 
+		dimensionality(dimension), 
+		__centroid(dimensionality),
+		size(0), 
+		__id(idGenerator()){}
 
-	Cluster::Cluster(const Cluster &cluster) : __centroid(dimensionality)
+	Cluster::Cluster(const Cluster &cluster) : __centroid(cluster.dimensionality)		// __centroid(dimensionality)
 	{
 		size = cluster.size;
 		dimensionality = cluster.dimensionality;
-		setCentroid(cluster.__centroid);
-		__id = idGenerator();
+		//setCentroid(cluster.__centroid);					
+		validity = cluster.validity;						
+		__id = cluster.__id;
 
 		//case cluster is empty
 		if (cluster.points == NULL) {
@@ -34,20 +39,19 @@ namespace clustering {
 			node->p = cPtr->p;						//copy point pointer
 			lastPtr = node;
 		}
-		
 	}
 	
 	Cluster & Cluster::operator=(const Cluster &cluster)
 	{
-		if (cluster == *this)
+		if (&cluster == this)				
 			return *this;
 
 		clear();		//free up memory
-		
+		validity = cluster.validity;		
 		size = cluster.size;
 		dimensionality = cluster.dimensionality;
-		setCentroid(cluster.__centroid);
-
+		//setCentroid(cluster.__centroid);				
+		__id = cluster.__id;
 		//case: cluster is empty
 		if (cluster.points == NULL) {
 			points = NULL;
@@ -86,64 +90,58 @@ namespace clustering {
 		}
 	}
 
-	
-	void Cluster::add(const PointPtr &p)
+	void Cluster::add(const PointPtr &p)					
 	{
 		if (points != NULL)
-			assert(p->getDims() == points->p->getDims());				//make sure dimensions match
-		
-		if (find(p) != NULL) {											//make sure p is not already in cluster
+		assert(p->getDims() == points->p->getDims());				//make sure dimensions match 
+	
+		if (find(p) != NULL) {											//make sure p is not already in cluster 
 			return;
 		}
-
-		//increment size
 		size++;
-
-		//invalidate centroid
-		setValidity(false);
-
-		//create node
-		LNodePtr node = new LNode;		
+		LNodePtr node = new LNode;										// Dynamically allocate new node 
 		LNodePtr ptr = points;
 		node->p = p;
-
-		//insert node
-		if (points == NULL) {			//case: empty cluster
+	
+		if (points == NULL) {											//case: empty cluster 
 			points = node;
 			node->next = nullptr;
 			return;
 		}
-
-		if (*node->p < *points->p) {	//case: new point is smallest point
+	
+		if (*node->p < *points->p) {									//case: new point is smallest point 
 			node->next = points;
 			points = node;
 			return;
 		}
-
-		//put in lexographic order
+	
 		LNodePtr last = nullptr;
-		while ( *p > *ptr->p) {							
+	
+		while (*p > *ptr->p) {										//put in lexographic order 
 			last = ptr;
-			if (ptr->next == NULL) {//if end of list
+			if (ptr->next == NULL) {//if end of list 
 				node->next = nullptr;
 				last->next = node;
 				return;
 			}
-			ptr = ptr->next;		
+			ptr = ptr->next;
 		}
-
-		while (*p == *ptr->p && p > ptr->p) {			//if points are equal sort by memory address 
-			last = ptr;									//for reasons of comparison
+	
+		while (*p == *ptr->p && p > ptr->p) {							//if points are equal sort by memory address  
+			last = ptr;													//for reasons of comparison 
 			if (ptr->next == NULL) {
 				node->next = nullptr;
 				last->next = node;
 				return;
 			}
-				ptr = ptr->next;				
+			ptr = ptr->next;
 		}
-
+	
 		node->next = ptr;
-		last->next = node;
+		if (last != nullptr)
+			last->next = node;
+		else
+			points = node;
 	}
 
 	const PointPtr & Cluster::remove(const PointPtr &point)
@@ -213,8 +211,14 @@ namespace clustering {
 		setValidity(false);
 	}
 
-	void Cluster::compCentroid()
+	void Cluster::computeCentroid()
 	{
+		if (size == 0) {					
+			for (int i = 1; i < dimensionality + 1; i++)
+				__centroid[i] = std::numeric_limits<double>::max();
+			setValidity(true);
+			return;
+		}
 		LNodePtr node = points;
 		int dim = points->p->getDims();
 		Point accumulator(dim);
@@ -256,7 +260,7 @@ namespace clustering {
 
 		//save position of file pointer 
 		int pos = in.tellg();
-
+		
 		// account for possible eof bit
 		in.clear();
 
@@ -281,20 +285,48 @@ namespace clustering {
 
 	void Cluster::pickPoints(int k, PointPtr *pointArray)
 	{
-		assert(k >= 0 && k <= size);
+		assert(k >= 0);				
 		LNodePtr node = points;
-		int interval = size / (k-1);
-		for (int j = 0; j < k; j ++) {
+
+		if (k == 1) {					
+			pointArray[0] = node->p;
+			return;
+		}
+
+		int interval;
+		if (k > size)
+			interval = 1;			
+		else			
+			interval = size / (k-1);
+
+		int loop;							
+		if (k > size)
+			loop = size;
+		else
+			loop = k;
+		for (int j = 0; j < loop; j ++) {				
 			pointArray[j] = node->p;
 			for (int i = 0; i < interval; i++) {
 				node = node->next;
-				if (node->next == NULL) break;
+				if (node->next == NULL) break;		
 			}
-			if (node->next == NULL) break;
+			if (node->next == NULL) break;			
 		}	
-		while (node->next != NULL)
+		while (node->next != NULL)				
 			node = node->next;
-		pointArray[k - 1] = node->p;
+		if(k <= size)
+			pointArray[k - 1] = node->p;
+		else {
+			pointArray[size - 1] = node->p;			
+			Point point(dimensionality);// = new Point(dimensionality);
+			
+			for (int i = size; i < k; i++) {
+				Point* ptr = new Point(dimensionality);
+				for (int j = 0; j < dimensionality; j++)
+					(*ptr)[j + 1] = std::numeric_limits<double>::max();		// allocate bogus points
+				pointArray[i] = ptr;
+			}
+		}
 	}
 
 	const LNodePtr Cluster::find(const PointPtr point) const
@@ -317,6 +349,14 @@ namespace clustering {
 		}
 	}
 
+	bool Cluster::contains(const PointPtr & ptr) const					
+	{
+		if (find(ptr) == NULL)
+			return false;
+		else
+			return true;
+	}
+
 	const LNodePtr Cluster::find(Point point) const
 	{
 		if (points == NULL)
@@ -337,13 +377,13 @@ namespace clustering {
 		}
 	}
 
-	Point &Cluster::operator[](int index)
+	PointPtr &Cluster::operator[](int index)
 	{
 		assert(index >= 0 && index < size);
 		LNodePtr ptr = points;
 		for (int i = 0; i < index; i++)
 			ptr = ptr->next;
-		return *ptr->p;
+		return ptr->p;
 	}
 
 	double interClusterDistance(const Cluster &c1, const Cluster &c2)
@@ -363,16 +403,12 @@ namespace clustering {
 		return c1.getSize() * c2.getSize();
 	}
 
-	std::ostream & operator<<(std::ofstream &output, const Cluster &cluster) {
+	std::ostream & operator<<(std::ostream &output, const Cluster &cluster) {
 		LNodePtr ptr = cluster.points;
-		if (cluster.points == NULL)
-			output << "The cluster is empty";
-		else {
-			int count = 1;
-			for (ptr; ptr != NULL; ptr = ptr->next) {
-				output  << *ptr->p << " : " << cluster.__id << std::endl;;
-				count++;
-			}
+		int count = 1;
+		for (ptr; ptr != NULL; ptr = ptr->next) {
+			output  << *ptr->p << " : " << cluster.__id << std::endl;
+			count++;
 		}
 		return output;
 	}
@@ -392,7 +428,7 @@ namespace clustering {
 			line >> *point;
 			cluster.add(point);
 		}
-		cluster.compCentroid();
+		cluster.computeCentroid();
 		return in;
 		
 
@@ -422,8 +458,8 @@ namespace clustering {
 		for (node; node != NULL; node = node->next)		
 			cluster.add(node->p);
 
-		//invalidate centroid
-		cluster.setValidity(false);
+		if (shared.size == LHS.size)				
+			cluster.setValidity(true);			
 		return cluster;
 	}
 
@@ -439,7 +475,7 @@ namespace clustering {
 		}
 
 		//invalidate centroid
-		cluster.setValidity(false);
+		//cluster.setValidity(false);
 
 		return cluster;
 	}
@@ -490,6 +526,14 @@ namespace clustering {
 		return c;
 	}
 
+	const Cluster operator+(const Cluster &cluster, const PointPtr Point)
+	{
+		Cluster c(cluster);
+		c.add(Point);
+		return c;
+	}
+
+
 	Cluster & operator+=(Cluster &cluster, const Point &point)
 	{
 		cluster = cluster + point;
@@ -512,6 +556,22 @@ namespace clustering {
 		//invalidate newCluster's centroid
 		newCluster.setValidity(false);
 
+		return newCluster;
+	}
+
+	const Cluster operator-(const Cluster &cluster, const PointPtr point)
+	{
+		Cluster newCluster(cluster);
+		LNodePtr node = cluster.find(point);
+	
+		if (node == NULL)
+			std::cout << "Can't Remove: The point was not found" << std::endl;
+	
+		while (node != NULL) {
+			node = newCluster.find(point);
+			newCluster.removeAfter(node);
+		}
+	
 		return newCluster;
 	}
 

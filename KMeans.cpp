@@ -3,21 +3,22 @@
 #include<cmath>
 #include <limits>
 
-namespace clustering {
-	KMeans::KMeans(unsigned int k, std::ifstream &inFile)
+namespace Clustering {
+	KMeans::KMeans(unsigned int dim, unsigned int k, std::string fileName)
 	{
 		// set members
 		K = k;
+		std::ifstream inFile;
+		inFile.open(fileName);
+		//std:: cout << inFile.is_open();
 		in = &inFile;
+		dimension = dim;
 		out.open("Output.txt");
 		scoreDiff = SCORE_DIFF_THRESHOLD + 1;
 
-		// The algorithm
 		createClusters();
 		readPoints();
-		setCentroids();
-		recomputeClusters();
-		printResults();
+		//run();					
 		
 	}
 
@@ -25,7 +26,7 @@ namespace clustering {
 	{
 		point_space = new Cluster*[K];
 		for (int i = 0; i < K; i++)
-			point_space[i] = new Cluster(K);
+			point_space[i] = new Cluster(dimension);
 	}
 
 	void KMeans::readPoints()
@@ -49,7 +50,7 @@ namespace clustering {
 
 	double KMeans::computeClusteringScore()
 	{
-		// sum of: intracluster distance / intercluster difference / intracluster edges / intercluster edges (respectively)
+		// sum of: intracluster distance / intercluster distance / intracluster edges / intercluster edges (respectively)
 		double Din = 0, Dout = 0, Pin = 0, Pout = 0; 
 
 		for (int i = 0; i < K; i++) {
@@ -63,16 +64,18 @@ namespace clustering {
 				// sum intercluster distance/edges 
 				Dout += interClusterDistance(*point_space[i], *point_space[j]);
 
-				//// avoid dividing by zero if (k-1) clusters are empty
-				//if (Dout == 0)
-				//	return 99999;
-
 				Pout += interClusterEdges(*point_space[i], *point_space[j]);
 
 			}				
 		}
 
 		//  BetaCV = (intraClusterDistance / intraClusterEdges) / (interClusterDistance / interClusterEdges)
+		if (Din == 0 && Pin == 0)				
+			return 0;		// Avoid dividing by zero if there is only one point in cluster	
+		if (Dout == 0 && Pout == 0) {
+			Dout = 1;
+			Pout = 1;
+		}
 		return (Din / Pin) / (Dout / Pout);
 	}
 
@@ -100,7 +103,7 @@ namespace clustering {
 					//	find the min distance(point, centroid)
 					for (int h = 0; h < K; h++ ) {
 						Point p = point_space[h]->getCentroid();
-						double newDistance = (*point_space[i])[j].distanceTo(p);
+						double newDistance = (*point_space[i])[j]->distanceTo(p);					
 						if (newDistance < minDistance) {
 							minDistance = newDistance;
 							newIndex = h;
@@ -110,7 +113,7 @@ namespace clustering {
 					//	if centroid not of current cluster
 					if (newIndex != i) {
 						// perform move(point, current, other)
-						Cluster::Move(&(*point_space[i])[j], point_space[i], point_space[newIndex]).perform();
+						Cluster::Move((*point_space[i])[j], point_space[i], point_space[newIndex]).perform();			
 					}
 				}
 			}
@@ -119,10 +122,10 @@ namespace clustering {
 			for (int i = 0; i < K; i++) {
 
 				//	if centroid invalid
-				if (point_space[i]->getValidity() == false) {
+				if (point_space[i]->isCentroidValid() == false) {
 					// compute and set valid to true
 					if(point_space[i]->getSize() > 0)
-						point_space[i]->compCentroid();
+						point_space[i]->computeCentroid();
 				}
 			
 			}
@@ -143,6 +146,25 @@ namespace clustering {
 		delete[] point_space;
 	}
 
+	void KMeans::run()
+	{
+		// The algorithm
+		
+		setCentroids();
+		recomputeClusters();
+		printResults();
+	}
+
+	Cluster & KMeans::operator[](unsigned int index)
+	{
+		return *point_space[index];
+	}
+
+	const Cluster & KMeans::operator[](unsigned int index) const
+	{
+		return *point_space[index];
+	}
+
 	cPtr KMeans::getClusters(int index)
 	{
 		return point_space[index];
@@ -152,6 +174,14 @@ namespace clustering {
 	{
 		for (int i = 0; i < K; i++)
 			out << *point_space[i];
+	}
+
+	std::ostream & operator<<(std::ostream & os, const KMeans & kmeans)
+	{
+		for (int i = 0; i < kmeans.K; i++) {
+			os << *(kmeans.point_space[i]);
+		}
+		return os;
 	}
 
 }
